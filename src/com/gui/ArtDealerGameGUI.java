@@ -24,8 +24,13 @@ public class ArtDealerGameGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Instructions label
-        JLabel instructionsLabel = new JLabel("<html>Select a grade level and enter 4 cards.<br> Guess the pattern the art dealer is buying!</html>");
+        JLabel instructionsLabel = new JLabel("<html>Select a grade level and enter 4 cards.<br>"
+                + "Use the format 'Rank of Suit', separated by commas.<br>"
+                + "Example: '2 of Hearts, 3 of Diamonds, 5 of Clubs, 7 of Spades'.<br>"
+                + "Guess the pattern the art dealer is buying!</html>");
+
         instructionsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
 
         // Level selection dropdown
         String[] levels = {"K-2", "3-5", "6-8"};

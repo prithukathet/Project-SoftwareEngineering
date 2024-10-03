@@ -26,7 +26,7 @@ public class ArtDealerGameK_2  implements ArtDealerGame{
     @Override
     public boolean isDealerBuying(String[] cards) {
         switch (dealerpattern) {
-            case "All Reds":
+            case "All Red":
                 return checkCards.allRed(cards);
             case "All Black":
                 return checkCards.allBlack(cards);
