@@ -2,7 +2,6 @@ package com.options;
 
 public class Pattern_K_2 {
 
-
     //cehck if all cards are red(Hearts or Diamonds)
     public boolean allRed(String[] cards) {
         for (String card : cards) {

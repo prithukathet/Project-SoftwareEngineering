@@ -1,5 +1,6 @@
 package com.gui;
 
+import com.artdealergame.ArtDealerGame;
 import com.artdealergame.ArtDealerGame3_5;
 import com.artdealergame.ArtDealerGame6_8;
 import com.artdealergame.ArtDealerGameK_2;
@@ -14,7 +15,7 @@ public class ArtDealerGameGUI extends JFrame {
     private JLabel resultLabel;
     private JButton guessButton;
     private JComboBox<String> levelSelection;
-    private Object game;
+    private ArtDealerGame game;
 
     public ArtDealerGameGUI() {
         setTitle("Art Dealer Game");
@@ -51,6 +52,10 @@ public class ArtDealerGameGUI extends JFrame {
         panel.add(resultLabel, BorderLayout.WEST);
 
         add(panel);
+
+        // Initialize the game to a default level
+        game = new ArtDealerGameK_2();  // Default to "K-2"
+
         setVisible(true);
     }
 
@@ -73,12 +78,24 @@ public class ArtDealerGameGUI extends JFrame {
 
     private class GuessButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+            // Check if game is null (in case no level was selected)
+            if (game == null) {
+                resultLabel.setText("Please select a level first.");
+                return;
+            }
+
             String[] cards = cardInputArea.getText().split(","); // Assume cards are separated by commas
-            boolean result = ((ArtDealerGameK_2) game).isDealerBuying(cards);
+
+            // Check if input is valid (e.g., 4 cards)
+            if (cards.length != 4) {
+                resultLabel.setText("Please enter exactly 4 cards.");
+                return;
+            }
+
+            boolean result = game.isDealerBuying(cards);
             resultLabel.setText(result ? "Correct!" : "Try Again!");
         }
     }
-
 
     public static void main(String[] args) {
         new ArtDealerGameGUI();

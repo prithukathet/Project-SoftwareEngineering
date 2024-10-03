@@ -4,7 +4,7 @@ import com.options.Pattern_K_2;
 
 import java.util.*;
 
-public class ArtDealerGameK_2 {
+public class ArtDealerGameK_2  implements ArtDealerGame{
     private static final String[] SIMPLE_PATTERNS = {"All Red", "All Black", "All Hearts", "All Queens"};
 
     Pattern_K_2 checkCards = new Pattern_K_2();
@@ -22,6 +22,8 @@ public class ArtDealerGameK_2 {
     /*simulate the dealer's decision whether to buy the card based
     on the pattern
     */
+
+    @Override
     public boolean isDealerBuying(String[] cards) {
         switch (dealerpattern) {
             case "All Reds":
@@ -37,9 +39,9 @@ public class ArtDealerGameK_2 {
         }
     }
 
-
-    // Return the dealer's current pattern (for debugging or displaying results)
-    public String getDealerpattern() {
+    @Override
+    public String getDealerPattern() {
         return dealerpattern;
     }
+
 }

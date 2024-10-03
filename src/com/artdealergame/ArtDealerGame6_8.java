@@ -10,12 +10,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class ArtDealerGame6_8 {
+public class ArtDealerGame6_8 implements ArtDealerGame {
 
 
-     Pattern_K_2 pattern_k_2 = new Pattern_K_2();
-     Pattern3_5 pattern3_5 = new Pattern3_5();
-     Pattern6_8 pattern6_8 = new Pattern6_8();
+    Pattern_K_2 pattern_k_2 = new Pattern_K_2();
+    Pattern3_5 pattern3_5 = new Pattern3_5();
+    Pattern6_8 pattern6_8 = new Pattern6_8();
     private String dealerPattern;
 
     public ArtDealerGame6_8() {
@@ -26,6 +26,7 @@ public class ArtDealerGame6_8 {
     }
 
 
+    @Override
     public boolean isDealerBuying(String[] cards) {
         switch (dealerPattern) {
             case "All Red":
@@ -49,6 +50,7 @@ public class ArtDealerGame6_8 {
         }
     }
 
+    @Override
     public String getDealerPattern() {
         return dealerPattern;
     }
