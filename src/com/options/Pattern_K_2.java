@@ -5,12 +5,13 @@ public class Pattern_K_2 {
     //cehck if all cards are red(Hearts or Diamonds)
     public boolean allRed(String[] cards) {
         for (String card : cards) {
-            if (card.contains("Hearts") && card.contains("Diamonds")) {
-                return false;
+            if (!(card.contains("Hearts") || card.contains("Diamonds"))) {
+                return false; // Found a card that is not red
             }
         }
-        return true;
+        return true; // All cards are red
     }
+
 
     // Check if all cards are black (Spades or Clubs)
     public boolean allBlack(String[] cards) {

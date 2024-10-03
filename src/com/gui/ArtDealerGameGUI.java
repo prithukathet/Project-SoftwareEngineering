@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 public class ArtDealerGameGUI extends JFrame {
     private JTextArea cardInputArea;
@@ -78,24 +79,29 @@ public class ArtDealerGameGUI extends JFrame {
 
     private class GuessButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            // Check if game is null (in case no level was selected)
             if (game == null) {
                 resultLabel.setText("Please select a level first.");
                 return;
             }
-
-            String[] cards = cardInputArea.getText().split(","); // Assume cards are separated by commas
-
-            // Check if input is valid (e.g., 4 cards)
+            String[] cards = cardInputArea.getText().trim().split("\\s*,\\s*"); // Handle spaces
             if (cards.length != 4) {
                 resultLabel.setText("Please enter exactly 4 cards.");
                 return;
             }
+            // Debug: Print the dealer's pattern
+            System.out.println("Dealer's pattern: " + game.getDealerPattern());
+
+            // Debug: Print the cards entered
+            System.out.println("Cards entered: " + Arrays.toString(cards));
 
             boolean result = game.isDealerBuying(cards);
+            System.out.println("Dealer buying? " + result);
+
             resultLabel.setText(result ? "Correct!" : "Try Again!");
         }
     }
+
+
 
     public static void main(String[] args) {
         new ArtDealerGameGUI();
