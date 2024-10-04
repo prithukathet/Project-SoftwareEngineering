@@ -89,22 +89,27 @@ public class ArtDealerGameGUI extends JFrame {
                 return;
             }
             String[] cards = cardInputArea.getText().trim().split("\\s*,\\s*"); // Handle spaces
+
             if (cards.length != 4) {
                 resultLabel.setText("Please enter exactly 4 cards.");
                 return;
             }
-            // Debug: Print the dealer's pattern
-            System.out.println("Dealer's pattern: " + game.getDealerPattern());
-
-            // Debug: Print the cards entered
-            System.out.println("Cards entered: " + Arrays.toString(cards));
-
             boolean result = game.isDealerBuying(cards);
-            System.out.println("Dealer buying? " + result);
 
-            resultLabel.setText(result ? "Correct!" : "Try Again!");
+            if (result) {
+                resultLabel.setText("Correct!");
+
+                // Show balloon popup
+                ImageIcon balloonIcon = new ImageIcon(getClass().getResource("/resources/balloons.jpg"));
+                JOptionPane.showMessageDialog(null, "Congratulations! You guessed it right!", "Correct!",
+                        JOptionPane.INFORMATION_MESSAGE, balloonIcon);
+
+            } else {
+                resultLabel.setText("Try Again!");
+            }
         }
     }
+
 
 
 
