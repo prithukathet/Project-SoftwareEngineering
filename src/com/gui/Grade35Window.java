@@ -4,6 +4,9 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 
+import com.artdealergame.ArtDealerGame3_5;
+import com.artdealergame.artdealergame;
+
 public class Grade35Window {
     protected static final String True = null;
     // Array to store selected cards
