@@ -1,6 +1,7 @@
 package com.gui;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 
 public class Grade35Window {
@@ -14,17 +15,29 @@ public class Grade35Window {
         JFrame G35Frame = new JFrame("Grade 3-5 - Card Values");
 
         G35Frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        G35Frame.setSize(1400, 650); // Increased height to accommodate output area
+        G35Frame.setSize(1400, 750); // Increased height to accommodate output area
         G35Frame.setLocationRelativeTo(null); // Center the window
         G35Frame.setResizable(false); // Do not allow resizing
 
         ImageIcon image = new ImageIcon(getClass().getResource("/com/resources/artdealer.jpg"));
         G35Frame.setIconImage(image.getImage());
 
+        // Create a panel for the instruction message
+        JPanel instructionPanel = new JPanel();
+        instructionPanel.setBackground(Color.BLACK); // Set background color to black
+        JLabel instructionLabel = new JLabel(
+                "Art Dealer wants you to choose 4 paintings below to guess the pattern he is buying");
+        instructionLabel.setForeground(Color.GREEN); // Set text color to green
+        instructionLabel.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
+        instructionPanel.add(instructionLabel); // Add label to instruction panel
+
         // Create a main panel with a grid layout for cards
         JPanel mainPanel = new JPanel(new GridLayout(4, 13, 10, 10)); // 4 rows, 13 columns
+        mainPanel.setBackground(Color.BLACK);
+        mainPanel.setBorder(new LineBorder(Color.GREEN, 2)); // Set a neon green border with thickness 2
         JPanel bottomPanel = new JPanel(); // Panel for output messages
         bottomPanel.setPreferredSize(new Dimension(0, 100)); // Set height of the bottom panel to 100 pixels
+        bottomPanel.setBackground(Color.BLACK);
 
         // Card suits and values
         String[] suits = { "Hearts", "Diamonds", "Clubs", "Spades" };
@@ -95,6 +108,7 @@ public class Grade35Window {
         bottomPanel.add(outputArea); // Add output area to bottom panel
 
         // Add panels to the frame
+        G35Frame.add(instructionPanel, BorderLayout.NORTH); // Add instruction panel at the top
         G35Frame.add(mainPanel, BorderLayout.CENTER); // Add main panel in the center
         G35Frame.add(bottomPanel, BorderLayout.SOUTH); // Add bottom panel at the bottom
 
