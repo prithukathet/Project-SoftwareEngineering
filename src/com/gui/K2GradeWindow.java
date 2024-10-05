@@ -15,6 +15,8 @@ public class K2GradeWindow {
         // Create the K-2 window frame
         JFrame k2Frame = new JFrame("Grade K-2 - Card Values");
 
+        System.out.println("GradeChooserGUI initialized");
+
         k2Frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         k2Frame.setSize(1300, 500); // Increased height to accommodate output area
         k2Frame.setLocationRelativeTo(null); // Center the window

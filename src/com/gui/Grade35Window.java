@@ -11,19 +11,17 @@ public class Grade35Window {
     private JTextArea outputArea; // Declare outputArea as a class member
 
     public Grade35Window() {
-        // Create the K-2 window frame
+        // Create the 3-5 Main window frame
         JFrame G35Frame = new JFrame("Grade 3-5 - Card Values");
-
         G35Frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        G35Frame.setSize(1400, 750); // Increased height to accommodate output area
+        G35Frame.setSize(1600, 700); // Increased height to accommodate output area
         G35Frame.setLocationRelativeTo(null); // Center the window
         G35Frame.setResizable(false); // Do not allow resizing
-
         ImageIcon image = new ImageIcon(getClass().getResource("/com/resources/artdealer.jpg"));
         G35Frame.setIconImage(image.getImage());
 
-        // Create a panel for the instruction message
-        JPanel instructionPanel = new JPanel();
+        // Instruction Panel North
+        JPanel instructionPanel = new JPanel(new BorderLayout());
         instructionPanel.setBackground(Color.BLACK); // Set background color to black
         JLabel instructionLabel = new JLabel(
                 "Art Dealer wants you to choose 4 paintings below to guess the pattern he is buying");
@@ -31,12 +29,28 @@ public class Grade35Window {
         instructionLabel.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
         instructionPanel.add(instructionLabel); // Add label to instruction panel
 
-        // Create a main panel with a grid layout for cards
+        // Create the button
+        JButton chooseLevelButton = new JButton("Choose a Different Level");
+        chooseLevelButton.setBackground(Color.BLACK); // Set background color to black
+        chooseLevelButton.setForeground(Color.GREEN); // Set text color to green
+        chooseLevelButton.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
+
+        // Add the button to the instruction panel (far right) with event listener
+        instructionPanel.add(chooseLevelButton, BorderLayout.EAST);
+        chooseLevelButton.addActionListener(e -> {
+            System.out.println("Choose Level Button Clicked"); // Debugging line
+            G35Frame.dispose(); // Close the current window
+            new GradeChooserGUI(); // Open the GradeChooserGUI
+        });
+
+        // Main Panel with grid layout
         JPanel mainPanel = new JPanel(new GridLayout(4, 13, 10, 10)); // 4 rows, 13 columns
         mainPanel.setBackground(Color.BLACK);
         mainPanel.setBorder(new LineBorder(Color.GREEN, 2)); // Set a neon green border with thickness 2
+
+        // Bottom Panel
         JPanel bottomPanel = new JPanel(); // Panel for output messages
-        bottomPanel.setPreferredSize(new Dimension(0, 100)); // Set height of the bottom panel to 100 pixels
+        bottomPanel.setPreferredSize(new Dimension(0, 120)); // Set height of the bottom panel to 100 pixels
         bottomPanel.setBackground(Color.BLACK);
 
         // Card suits and values
@@ -76,13 +90,13 @@ public class Grade35Window {
                 // Create and add a JLabel for the card image
                 JLabel cardLabel = new JLabel(cardIcon);
                 cardLabel.setBounds(0, 0, cardWidth, cardHeight);
-                layeredPane.add(cardLabel, Integer.valueOf(0)); // Layer 0 for the card image
+                layeredPane.add(cardLabel, Integer.valueOf(0)); // Bottom layer for card image
 
                 // Create and add a JLabel for the checkmark icon
                 JLabel checkMarkLabel = new JLabel(checkMarkIcon);
                 checkMarkLabel.setBounds(0, 0, cardWidth, cardHeight);
                 checkMarkLabel.setVisible(false); // Initially hidden
-                layeredPane.add(checkMarkLabel, Integer.valueOf(1)); // Layer 1 for the checkmark
+                layeredPane.add(checkMarkLabel, Integer.valueOf(1)); // Top layer for checkmark over card
 
                 // Add action listener for button clicks
                 layeredPane.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -96,7 +110,7 @@ public class Grade35Window {
         }
 
         // Create a JTextArea for output messages
-        outputArea = new JTextArea(3, 40); // Create outputArea
+        outputArea = new JTextArea(3, 55); // Create outputArea
         outputArea.setEditable(false); // Make it non-editable
         outputArea.setBackground(Color.BLACK); // Set background color black
         outputArea.setForeground(Color.GREEN); // Set text color green
@@ -159,7 +173,7 @@ public class Grade35Window {
         StringBuilder output = new StringBuilder("Selected Cards:\n");
         for (String card : selectedCards) {
             if (card != null) {
-                output.append(card).append("\n");
+                output.append(card).append(", ");
             }
         }
         outputArea.setText(output.toString()); // Set text of output area
