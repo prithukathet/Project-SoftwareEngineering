@@ -5,6 +5,7 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 
 public class Grade35Window {
+    protected static final String True = null;
     // Array to store selected cards
     private String[] selectedCards = new String[4];
     private int selectedCount = 0; // Count of selected cards
@@ -38,9 +39,8 @@ public class Grade35Window {
         // Add the button to the instruction panel (far right) with event listener
         instructionPanel.add(chooseLevelButton, BorderLayout.EAST);
         chooseLevelButton.addActionListener(e -> {
-            System.out.println("Choose Level Button Clicked"); // Debugging line
-            G35Frame.dispose(); // Close the current window
-            new GradeChooserGUI(); // Open the GradeChooserGUI
+            G35Frame.dispose(); // Close this window
+            GradeChooserGUI.main(new String[0]); // Re-open the GradeChooserGUI
         });
 
         // Main Panel with grid layout

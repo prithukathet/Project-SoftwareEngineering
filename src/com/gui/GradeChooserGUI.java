@@ -159,13 +159,13 @@ public class GradeChooserGUI {
     private static void openGradeWindow(String grade) {
         switch (grade) {
             case "K-2":
-                new K2GradeWindow();
+                new K2GradeWindow(); // Ensure this class is defined
                 break;
             case "3-5":
-                new Grade35Window();
+                new Grade35Window(); // Ensure this class is defined
                 break;
             case "6-8":
-                new Grade68Window();
+                new Grade68Window(); // Ensure this class is defined
                 break;
             default:
                 break;
