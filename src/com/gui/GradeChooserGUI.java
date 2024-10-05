@@ -1,4 +1,4 @@
-package com;
+package com.gui;
 
 import javax.sound.sampled.*;
 import javax.swing.*;

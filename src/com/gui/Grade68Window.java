@@ -1,27 +1,27 @@
-package com;
+package com.gui;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class Grade35Window {
+public class Grade68Window {
     // Array to store selected cards
     private String[] selectedCards = new String[4];
     private int selectedCount = 0; // Count of selected cards
     private JTextArea outputArea; // Declare outputArea as a class member
 
-    public Grade35Window() {
+    public Grade68Window() {
         // Create the K-2 window frame
-        JFrame G35Frame = new JFrame("Grade 3-5 - Card Values");
+        JFrame G68Frame = new JFrame("Grade 6-8 - Card Values");
 
-        G35Frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        G35Frame.setSize(1300, 500); // Increased height to accommodate output area
-        G35Frame.setLocationRelativeTo(null); // Center the window
-        G35Frame.setResizable(false); // Do not allow people resize this screen
+        G68Frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        G68Frame.setSize(1300, 500); // Increased height to accommodate output area
+        G68Frame.setLocationRelativeTo(null); // Center the window
+        G68Frame.setResizable(false); // Do not allow people resize this screen
 
         ImageIcon image = new ImageIcon(getClass().getResource("/com/resources/artdealer.jpg"));
-        G35Frame.setIconImage(image.getImage());
+        G68Frame.setIconImage(image.getImage());
 
         // Create a main panel with a grid layout for headers and buttons
         JPanel mainPanel = new JPanel(new GridLayout(4, 4, 10, 10)); // 4 rows, 4 columns
@@ -87,13 +87,13 @@ public class Grade35Window {
         outputArea.setLineWrap(true); // enables line to wrap
 
         // Add panels to the frame
-        G35Frame.add(topPanel, BorderLayout.NORTH); // Add top panel at the top
-        G35Frame.add(mainPanel, BorderLayout.CENTER); // Add main panel in the center
+        G68Frame.add(topPanel, BorderLayout.NORTH); // Add top panel at the top
+        G68Frame.add(mainPanel, BorderLayout.CENTER); // Add main panel in the center
         bottomPanel.add(outputArea); // Add output area to bottom panel
-        G35Frame.add(bottomPanel, BorderLayout.SOUTH); // Add bottom panel at the bottom
+        G68Frame.add(bottomPanel, BorderLayout.SOUTH); // Add bottom panel at the bottom
 
         // makes the frame visable
-        G35Frame.setVisible(true); // Make the 3-5 window visible
+        G68Frame.setVisible(true); // Make the 3-5 window visible
     }
 
     // Inner class for handling button actions upon them being clicked or unclick
@@ -147,6 +147,20 @@ public class Grade35Window {
         }
     }
 
+    // Method to check if 4 cards are selected
+    // TO DO: Not sure if we want to call this from another function, still learning
+    // this part
+    private void checkSelectedCards() {
+        if (selectedCount == 4) {
+            // TO DO: Once 4 cards are selected run the code
+            // TO DO: If 4 cards are not matched to any, allow a total of 3 tries
+            // TO DO: If cards selected have X amount of matches, identify how many matches,
+            // but dont show which one
+            // TO DO: if all cards match, have use guess what the pattern is: Example: Four
+            // Hearts or All Queens, Etc.
+        }
+    }
+
     // Method to update the output area with selected cards
     private void updateOutputArea() {
         StringBuilder output = new StringBuilder("Selected Cards:\n");
@@ -157,34 +171,4 @@ public class Grade35Window {
         }
         outputArea.setText(output.toString()); // Set text of output area
     }
-
-    // Method to check if 4 cards are selected and confirm with the user
-    private void checkSelectedCards() {
-        if (selectedCount == 4) {
-            // Build a message to display the selected cards
-            StringBuilder selectedMessage = new StringBuilder("Are you sure these are the four cards?\n");
-            for (String card : selectedCards) {
-                if (card != null) {
-                    selectedMessage.append(card).append("\n");
-                }
-            }
-
-            // Display a confirmation dialog asking if the user is sure
-            int response = JOptionPane.showConfirmDialog(null, selectedMessage.toString(), "Confirm Selection",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-            // Handle the user's response
-            if (response == JOptionPane.YES_OPTION) {
-                // User confirmed their selection, proceed with the game logic
-                // TO DO: Add logic to check matches or allow guesses
-                System.out.println("User confirmed their selection. Proceeding...");
-                // You can call the logic to check for matches or the pattern here
-            } else {
-                // User chose "No", allow them to continue selecting/changing cards
-                System.out.println("User wants to change their selection.");
-                // You could clear the selected cards if necessary or allow changes
-            }
-        }
-    }
-
 }
