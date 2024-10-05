@@ -147,20 +147,6 @@ public class Grade35Window {
         }
     }
 
-    // Method to check if 4 cards are selected
-    // TO DO: Not sure if we want to call this from another function, still learning
-    // this part
-    private void checkSelectedCards() {
-        if (selectedCount == 4) {
-            // TO DO: Once 4 cards are selected run the code
-            // TO DO: If 4 cards are not matched to any, allow a total of 3 tries
-            // TO DO: If cards selected have X amount of matches, identify how many matches,
-            // but dont show which one
-            // TO DO: if all cards match, have use guess what the pattern is: Example: Four
-            // Hearts or All Queens, Etc.
-        }
-    }
-
     // Method to update the output area with selected cards
     private void updateOutputArea() {
         StringBuilder output = new StringBuilder("Selected Cards:\n");
@@ -171,4 +157,34 @@ public class Grade35Window {
         }
         outputArea.setText(output.toString()); // Set text of output area
     }
+
+    // Method to check if 4 cards are selected and confirm with the user
+    private void checkSelectedCards() {
+        if (selectedCount == 4) {
+            // Build a message to display the selected cards
+            StringBuilder selectedMessage = new StringBuilder("Are you sure these are the four cards?\n");
+            for (String card : selectedCards) {
+                if (card != null) {
+                    selectedMessage.append(card).append("\n");
+                }
+            }
+
+            // Display a confirmation dialog asking if the user is sure
+            int response = JOptionPane.showConfirmDialog(null, selectedMessage.toString(), "Confirm Selection",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            // Handle the user's response
+            if (response == JOptionPane.YES_OPTION) {
+                // User confirmed their selection, proceed with the game logic
+                // TO DO: Add logic to check matches or allow guesses
+                System.out.println("User confirmed their selection. Proceeding...");
+                // You can call the logic to check for matches or the pattern here
+            } else {
+                // User chose "No", allow them to continue selecting/changing cards
+                System.out.println("User wants to change their selection.");
+                // You could clear the selected cards if necessary or allow changes
+            }
+        }
+    }
+
 }
