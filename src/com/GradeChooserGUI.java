@@ -12,42 +12,27 @@ public class GradeChooserGUI {
     private static Clip clip;
 
     public static void main(String[] args) {
-        // Play background music when the application opens
-        playMusic("src/com/resources/background.wav");
-
         JFrame frame = createMainFrame("Art Dealer Game", 400, 400); // Create the main frame for the application
         JPanel panel = createMainPanel(); // Create a panel to hold components
 
-        // Add labels to the panel -- imports later on
+        // Add labels to the panel
         JLabel choosegradetxt = createLabel("Choose which grade you are in!", Color.white);
         JLabel createdbytxt = createLabel("Created by Prithu Kathet and Travis Lester", Color.white);
 
-        // Create buttons for each grade level -- imports later on
+        // Create buttons for each grade level
         JButton buttonK2 = createGradeButton("K-2");
         JButton button35 = createGradeButton("3-5");
         JButton button68 = createGradeButton("6-8");
 
         // Add action listeners to buttons to handle grade selection
-        buttonK2.addActionListener(e -> {
-            openGradeWindow("K-2"); // when K-2 button is clicked
-            stopMusic(); // Stop the music when K-2 button is clicked and new window populates
-            frame.dispose(); // Close the main window
-        });
-        button35.addActionListener(e -> { // creates the listener when button is clicked
-            openGradeWindow("3-5"); // when 3-5 button is clicked
-            stopMusic(); // Stop the music when 3-5 button is clicked and new window populates
-            frame.dispose(); // Close the main window
-        });
-        button68.addActionListener(e -> { // creates the listener when button is clicked
-            openGradeWindow("6-8"); // when 6-8 button is clicked
-            stopMusic(); // Stop the music when 6-8 is clicked and new window populates
-            frame.dispose(); // Closes the main window
-        });
+        buttonK2.addActionListener(e -> handleGradeButtonClick(frame, "K-2"));
+        button35.addActionListener(e -> handleGradeButtonClick(frame, "3-5"));
+        button68.addActionListener(e -> handleGradeButtonClick(frame, "6-8"));
 
         // Add components to the panel with spacing
         addComponentsToPanel(panel, choosegradetxt, buttonK2, button35, button68, createdbytxt);
 
-        // Adds the panel to the frame
+        // Add the panel to the frame
         frame.add(panel);
 
         // Changes Icon of the window
@@ -56,27 +41,44 @@ public class GradeChooserGUI {
 
         // Makes the frame visible
         frame.setVisible(true);
+
+        // Play background music when the application opens
+        playMusic("src/com/resources/background.wav");
+
+        // Stop music when the window is closed
+        frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                stopMusic(); // Stop the music when the window is closing
+                frame.dispose(); // Dispose the frame
+            }
+        });
+    }
+
+    // Handle button clicks to open grade windows and stop music
+    private static void handleGradeButtonClick(JFrame frame, String grade) {
+        openGradeWindow(grade); // Open the corresponding grade window
+        stopMusic(); // Stop the music when a grade button is clicked
+        frame.dispose(); // Close the main window
     }
 
     // Creates the main frame
     private static JFrame createMainFrame(String title, int width, int height) {
         JFrame frame = new JFrame(title);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // closes completed when X is pressed
-        frame.setSize(width, height); // sets default width and height
-        frame.setResizable(false); // Do not allow people resize this screen
-        frame.setLocationRelativeTo(null); // Center the frame on the screen
-
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(width, height);
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
         ((JComponent) frame.getRootPane()).setBorder(BorderFactory.createLineBorder(Color.GREEN, 5)); // Add a neon
                                                                                                       // green border to
                                                                                                       // the frame
-
         return frame;
     }
 
     // Create the main panel
     private static JPanel createMainPanel() {
         JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // Stack components vertically
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Space around the panel
         panel.setBackground(Color.BLACK); // Set background to black
         return panel;
@@ -84,23 +86,22 @@ public class GradeChooserGUI {
 
     // Creates a JLabel with specified text and foreground color
     private static JLabel createLabel(String text, Color foregroundColor) {
-        JLabel label = new JLabel(text); // creates a text
-        label.setForeground(foregroundColor); // sets text color
+        JLabel label = new JLabel(text);
+        label.setForeground(foregroundColor);
         label.setAlignmentX(Component.CENTER_ALIGNMENT); // Center label
         return label;
     }
 
     // Create a grade button with specified text
     private static JButton createGradeButton(String text) {
-        JButton button = new JButton(text); // creates a new button
-        button.setPreferredSize(new Dimension(150, 70)); // sets the window size
-        button.setMaximumSize(button.getPreferredSize()); // allows the button to change size upon screen resize,
-                                                          // however, screen resize is disabled
-        button.setBackground(Color.black); // sets background to black
-        button.setForeground(Color.GREEN); // sets color of text to green
-        button.setFont(new Font("Comic Sans", Font.BOLD, 22)); // Sets font, size, and boldness
-        button.setFocusable(false); // Removes the box around the text upon clicking the button
-        button.setAlignmentX(Component.CENTER_ALIGNMENT); // Center button
+        JButton button = new JButton(text);
+        button.setPreferredSize(new Dimension(150, 70));
+        button.setMaximumSize(button.getPreferredSize());
+        button.setBackground(Color.black);
+        button.setForeground(Color.GREEN);
+        button.setFont(new Font("Comic Sans", Font.BOLD, 22));
+        button.setFocusable(false);
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.setBorder(BorderFactory.createLineBorder(Color.GREEN, 2)); // Add neon green border
         return button;
     }
@@ -109,7 +110,7 @@ public class GradeChooserGUI {
     private static void addComponentsToPanel(JPanel panel, JLabel choosegradetxt, JButton buttonK2, JButton button35,
             JButton button68, JLabel createdbytxt) {
         panel.add(Box.createRigidArea(new Dimension(0, 20))); // Space at the top
-        panel.add(choosegradetxt); // Imports the choose grade text we added above
+        panel.add(choosegradetxt);
         panel.add(Box.createRigidArea(new Dimension(0, 20))); // Space between the label and buttons
         panel.add(Box.createHorizontalGlue()); // Adding horizontal glue for centering buttons
         panel.add(buttonK2);
