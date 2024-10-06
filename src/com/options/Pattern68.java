@@ -2,7 +2,7 @@ package com.options;
 
 public class Pattern68 {
 
-	public boolean flush(String[] cards) {
+	public static boolean flush(String[] cards) {
 		String suit = cards[0].split(" ")[2]; // Get the suit of the first card
 		for (String card : cards) {
 			if (!card.contains(suit)) {
@@ -12,7 +12,7 @@ public class Pattern68 {
 		return true; // All cards are of the same suit
 	}
 
-	public boolean onePair(String[] cards) {
+	public static boolean onePair(String[] cards) {
 		int[] ranks = new int[13]; // 0-12 represent A-K
 		for (String card : cards) {
 			String rank = card.split(" ")[0];
@@ -29,7 +29,59 @@ public class Pattern68 {
 		return false;
 	}
 
-	private int getRankIndex(String rank) {
+	
+	public static boolean twoPair(String[] cards) {
+		int[] ranks = new int[13]; // 0-12 represent A-K
+		for (String card : cards) {
+			String rank = card.split(" ")[0];
+			int index = getRankIndex(rank);
+			if (index != -1) {
+				ranks[index]++;
+			}
+		}
+		// Check for at least one pair
+		for (int count : ranks) {
+			if (count == 2)
+				return true;
+		}
+		return false;
+	}
+
+	public static boolean threePair(String[] cards) {
+		int[] ranks = new int[13]; // 0-12 represent A-K
+		for (String card : cards) {
+			String rank = card.split(" ")[0];
+			int index = getRankIndex(rank);
+			if (index != -1) {
+				ranks[index]++;
+			}
+		}
+		// Check for at least one pair
+		for (int count : ranks) {
+			if (count == 2)
+				return true;
+		}
+		return false;
+	}
+
+	public static boolean fourPair(String[] cards) {
+		int[] ranks = new int[13]; // 0-12 represent A-K
+		for (String card : cards) {
+			String rank = card.split(" ")[0];
+			int index = getRankIndex(rank);
+			if (index != -1) {
+				ranks[index]++;
+			}
+		}
+		// Check for at least one pair
+		for (int count : ranks) {
+			if (count == 2)
+				return true;
+		}
+		return false;
+	}
+
+	private static int getRankIndex(String rank) {
 		switch (rank) {
 			case "2":
 				return 0;

@@ -1,165 +1,203 @@
 package com.gui;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.Arrays;
+
+import com.artdealergame.ArtDealerGameK2;
+import com.artdealergame.ArtDealerGameK2.BooleanStringPair;
+
+// import javafx.event.ActionEvent;
+// import java.awt.event.ActionListener;
 
 public class K2GradeWindow {
+    protected static final String True = null;
     // Array to store selected cards
     private String[] selectedCards = new String[4];
     private int selectedCount = 0; // Count of selected cards
     private JTextArea outputArea; // Declare outputArea as a class member
+    private int attemptCount = 0; // Count of attempts made by the user
+    private JComboBox<String> patternGuessComboBox; // Add this declaration
+    private JPanel mainPanel; // Declare mainPanel as a class member
+    private ImageIcon checkMarkIcon; // Declare checkMarkIcon as a class member
+    private ArtDealerGameK2 game; // Declare game as a class member
+    private JLabel guessStatusLabel; // Declare the JLabel to display guess status
 
     public K2GradeWindow() {
-        // Create the K-2 window frame
-        JFrame k2Frame = new JFrame("Grade K-2 - Card Values");
+        // Initialize the game instance
+        game = new ArtDealerGameK2();
+        // Create the K-2 Main window frame
+        JFrame K2Frame = new JFrame("Grade K-2 - Card Values");
+        K2Frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        K2Frame.setSize(1600, 700); // Increased height to accommodate output area
+        K2Frame.setLocationRelativeTo(null); // Center the window
+        K2Frame.setResizable(false); // Do not allow resizing
+        ImageIcon image = new ImageIcon(getClass().getResource("/resources/artdealer.jpg"));
+        K2Frame.setIconImage(image.getImage());
 
-        System.out.println("GradeChooserGUI initialized");
+        patternGuessComboBox = new JComboBox<>(game.getPatterns()); // Example initialization
 
-        k2Frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        k2Frame.setSize(1300, 500); // Increased height to accommodate output area
-        k2Frame.setLocationRelativeTo(null); // Center the window
-        k2Frame.setResizable(false); // Do not allow people resize this screen
+        // Instruction Panel North
+        JPanel instructionPanel = new JPanel(new BorderLayout());
+        instructionPanel.setBackground(Color.BLACK); // Set background color to black
+        JLabel instructionLabel = new JLabel(
+                "Art Dealer wants you to choose 4 paintings below to guess the pattern he is buying");
+        instructionLabel.setForeground(Color.GREEN); // Set text color to green
+        instructionLabel.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
+        instructionPanel.add(instructionLabel); // Add label to instruction panel
 
-        ImageIcon image = new ImageIcon(getClass().getResource("/com/resources/artdealer.jpg"));
-        k2Frame.setIconImage(image.getImage());
+        // Create the button
+        JButton chooseLevelButton = new JButton("Choose a Different Level");
+        chooseLevelButton.setBackground(Color.BLACK); // Set background color to black
+        chooseLevelButton.setForeground(Color.GREEN); // Set text color to green
+        chooseLevelButton.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
+        chooseLevelButton.setFocusable(false);
 
-        // Create a main panel with a grid layout for headers and buttons
-        JPanel mainPanel = new JPanel(new GridLayout(4, 4, 10, 10)); // 4 rows, 4 columns
-        JPanel topPanel = new JPanel(); // Panel for the "Choose 4 Cards" text
+        // Initialize the guess status label
+        guessStatusLabel = new JLabel("<html>Attempts: 0<br>Remaining: 3</html>"); // Initial message
+        guessStatusLabel.setForeground(Color.GREEN); // Set text color to green
+        guessStatusLabel.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
+
+        // Add the button to the instruction panel (far right) with event listener
+        instructionPanel.add(chooseLevelButton, BorderLayout.EAST);
+        chooseLevelButton.addActionListener(e -> {
+            K2Frame.dispose(); // Close this window
+            GradeChooserGUI.main(new String[0]); // Re-open the GradeChooserGUI
+        });
+
+        // Main Panel with grid layout
+        mainPanel = new JPanel(new GridLayout(4, 13, 10, 10)); // 4 rows, 13 columns
+        mainPanel.setBackground(Color.BLACK);
+        mainPanel.setBorder(new LineBorder(Color.GREEN, 2)); // Set a neon green border with thickness 2
+
+        // Bottom Panel
         JPanel bottomPanel = new JPanel(); // Panel for output messages
-
-        // Label for instruction
-        JLabel instructionLabel = new JLabel("Choose 4 Cards To Guess The Art Dealers Pattern", JLabel.CENTER);
-        instructionLabel.setFont(new Font("Comic Sans", Font.BOLD, 18));
-        topPanel.add(instructionLabel); // Add instruction label to top panel
+        bottomPanel.setPreferredSize(new Dimension(0, 120)); // Set height of the bottom panel to 100 pixels
+        bottomPanel.setBackground(Color.BLACK);
+        bottomPanel.add(guessStatusLabel); // Add the label to the bottom panel
 
         // Card suits and values
         String[] suits = { "Hearts", "Diamonds", "Clubs", "Spades" };
-        String[] values = { "Ace", "King", "Queen", "Jack", "10", "9", "8", "7", "6", "5", "4", "3", "2" };
+        String[] values = { "Ace", "King", "Queen", "Jack", "10", "9", "8", "7", "6", "5", "4",
+                "3", "2" };
 
-        // Icons for selected and unselected states
-        ImageIcon checkMarkIcon = new ImageIcon(getClass().getResource("/com/resources/checkMarkIcon.png")); // allows
-                                                                                                             // me to
-                                                                                                             // pull the
-                                                                                                             // image
-                                                                                                             // when
-                                                                                                             // card is
-                                                                                                             // selected
-        ImageIcon emptyIcon = new ImageIcon("emptyIcon.png");
+        // Icons for selected states
+        checkMarkIcon = new ImageIcon(getClass().getResource("/resources/checkMarkIcon.png"));
 
-        // Scale icons to fit button size
-        checkMarkIcon = new ImageIcon(checkMarkIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
-        emptyIcon = new ImageIcon(emptyIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+        // Desired size for card images
+        int cardWidth = 85; // Adjust this value as needed
+        int cardHeight = 120; // Adjust this value as needed
 
-        // Add headers and buttons to the main panel
-        for (int i = 0; i < suits.length; i++) {
-            // Create and add header label
-            JLabel header = new JLabel(suits[i], JLabel.CENTER);
-            header.setFont(new Font("Comic Sans", Font.BOLD, 16));
-            mainPanel.add(header); // Add header to the grid
+        // Resize the checkmark icon to match the card dimensions
+        Image resizedCheckMarkImage = checkMarkIcon.getImage().getScaledInstance(cardWidth, cardHeight,
+                Image.SCALE_SMOOTH);
+        checkMarkIcon = new ImageIcon(resizedCheckMarkImage);
 
-            // Add buttons for card values next to the header
+        // Add buttons for each card image
+        for (String suit : suits) {
             for (String value : values) {
-                JButton button = new JButton(value); // declare button
-                button.setPreferredSize(new Dimension(50, 30)); // set image size
-                button.setFocusable(false); // when button is selected, it removes the outline around the text
-                button.setBackground(Color.black); // set button background to black
-                button.setForeground(Color.GREEN); // set button text color to green
-                button.setFont(new Font("Comic Sans", Font.PLAIN, 12)); // Smaller font for smaller buttons
-                button.setBorder(BorderFactory.createLineBorder(Color.GREEN, 2)); // Neon green border
-                button.setIcon(emptyIcon); // Set the default icon to empty
+                // Construct the card file name
+                String cardFileName = value.toLowerCase() + "_of_" + suit.toLowerCase() + ".png";
+
+                // Load the image from the resources
+                ImageIcon cardIcon = new ImageIcon(getClass().getResource("/resources/playingCards/" + cardFileName));
+
+                // Resize the image
+                Image resizedImage = resizeImage(cardIcon.getImage(), cardWidth, cardHeight);
+                cardIcon = new ImageIcon(resizedImage);
+
+                // Create a JLayeredPane for stacking card and checkmark
+                JLayeredPane layeredPane = new JLayeredPane();
+                layeredPane.setPreferredSize(new Dimension(cardWidth, cardHeight));
+
+                // Create and add a JLabel for the card image
+                JLabel cardLabel = new JLabel(cardIcon);
+                cardLabel.setBounds(0, 0, cardWidth, cardHeight);
+                layeredPane.add(cardLabel, Integer.valueOf(0)); // Bottom layer for card image
+
+                // Create and add a JLabel for the checkmark icon
+                JLabel checkMarkLabel = new JLabel(checkMarkIcon);
+                checkMarkLabel.setBounds(0, 0, cardWidth, cardHeight);
+                checkMarkLabel.setVisible(false); // Initially hidden
+                layeredPane.add(checkMarkLabel, Integer.valueOf(1)); // Top layer for checkmark over card
 
                 // Add action listener for button clicks
-                final String suit = suits[i]; // Use a final local variable for the suit
-                button.addActionListener(new CardButtonActionListener(button, value, suit, checkMarkIcon, emptyIcon));
+                layeredPane.addMouseListener(new java.awt.event.MouseAdapter() {
+                    public void mouseClicked(java.awt.event.MouseEvent evt) {
+                        handleCardSelection(layeredPane, checkMarkLabel, value, suit);
+                    }
+                });
 
-                mainPanel.add(button); // Add button to the grid
+    // Add the label to the bottom panel
+    bottomPanel.add(guessStatusLabel); // Add the label to the bottom panel
+    mainPanel.add(layeredPane); // Add layered pane to the grid
             }
         }
 
         // Create a JTextArea for output messages
-        outputArea = new JTextArea(3, 40); // create outputArea
-        outputArea.setEditable(false); // make it non-editable so user sees what cards are selected
-        outputArea.setBackground(Color.BLACK); // sets background color black
-        outputArea.setForeground(Color.GREEN); // sets background color green
-        outputArea.setFont(new Font("Comic Sans", Font.PLAIN, 14)); // sets preference of font
+        outputArea = new JTextArea(3, 55); // Create outputArea
+        outputArea.setEditable(false); // Make it non-editable
+        outputArea.setBackground(Color.BLACK); // Set background color black
+        outputArea.setForeground(Color.GREEN); // Set text color green
+        outputArea.setFont(new Font("Comic Sans", Font.PLAIN, 14)); // Set font preference
         outputArea.setBorder(BorderFactory.createLineBorder(Color.GREEN, 2)); // Neon green border
-        outputArea.setLineWrap(true); // enables line to wrap
+        outputArea.setLineWrap(true); // Enable line to wrap
+
+        // Add the JTextArea to the bottom panel
+        bottomPanel.add(outputArea); // Add output area to bottom panel
 
         // Add panels to the frame
-        k2Frame.add(topPanel, BorderLayout.NORTH); // Add top panel at the top
-        k2Frame.add(mainPanel, BorderLayout.CENTER); // Add main panel in the center
-        bottomPanel.add(outputArea); // Add output area to bottom panel
-        k2Frame.add(bottomPanel, BorderLayout.SOUTH); // Add bottom panel at the bottom
+        K2Frame.add(instructionPanel, BorderLayout.NORTH); // Add instruction panel at the top
+        K2Frame.add(mainPanel, BorderLayout.CENTER); // Add main panel in the center
+        K2Frame.add(bottomPanel, BorderLayout.SOUTH); // Add bottom panel at the bottom
 
-        // makes the frame visable
-        k2Frame.setVisible(true); // Make the K-2 window visible
+        // Makes the frame visible
+        K2Frame.setVisible(true); // Make the K-2 window visible
     }
 
-    // Inner class for handling button actions upon them being clicked or unclick
-    private class CardButtonActionListener implements ActionListener {
-        private final JButton button;
-        private final String value;
-        private final String suit;
-        private final ImageIcon checkMarkIcon;
-        private final ImageIcon emptyIcon;
-
-        public CardButtonActionListener(JButton button, String value, String suit, ImageIcon checkMarkIcon,
-                ImageIcon emptyIcon) {
-            this.button = button;
-            this.value = value;
-            this.suit = suit;
-            this.checkMarkIcon = checkMarkIcon;
-            this.emptyIcon = emptyIcon;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (button.getIcon() == emptyIcon) { // if the button is not selected
-                if (selectedCount < 4) { // check if less than 4 cards are selected
-                    selectedCards[selectedCount] = value + " of " + suit; // format selected card to dislay correctly
-                    selectedCount++; // increase count to ensure we do not go over 4 cards selected
-                    button.setIcon(checkMarkIcon); // set the button icon to the checkmark upon click
-                    System.out.println("Selected Card: " + selectedCards[selectedCount - 1]); // print selected card to
-                                                                                              // box at the bottom
-                    updateOutputArea(); // update the output area at the bottom
-                    checkSelectedCards(); // check if the maximum number of cards is selected
-                } else {
-                    JOptionPane.showMessageDialog(null, "You can only select 4 cards!"); // error message pops if more
-                                                                                         // than 4 selected
-                }
-            } else { // if the button is already selected
-                selectedCount--; // decrease selected count upon unselection
-                selectedCards[findCardIndex(value, suit)] = null; // deselects the card
-                button.setIcon(emptyIcon); // reset the button icon to empty
-                updateOutputArea(); // update the output area at the bottom
-            }
-        }
-
-        // Method to find the index of the deselected card
-        private int findCardIndex(String value, String suit) {
-            for (int i = 0; i < selectedCards.length; i++) {
-                if (selectedCards[i] != null && selectedCards[i].equals(value + " of " + suit)) {
-                    return i;
-                }
-            }
-            return -1; // Return -1 if not found
-        }
+    // Method to resize the image
+    private Image resizeImage(Image originalImage, int targetWidth, int targetHeight) {
+        Image resizedImage = originalImage.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
+        return resizedImage;
     }
 
-    // Method to check if 4 cards are selected
-    // TO DO: Not sure if we want to call this from another function, still learning
-    // this part
-    private void checkSelectedCards() {
+    private void updateGuessStatusLabel() {
+        int remainingAttempts = 3 - attemptCount; // Assuming maximum attempts are 3
+        guessStatusLabel.setText("<html>Attempts: " + attemptCount + "<br>Remaining: " + remainingAttempts + "</html>");
+        guessStatusLabel.revalidate(); // Revalidate to ensure the label is updated
+        guessStatusLabel.repaint(); // Repaint to reflect the changes
+    }
+
+    // Handle card selection
+    private void handleCardSelection(JLayeredPane layeredPane, JLabel checkMarkLabel, String value, String suit) {
+        if (checkMarkLabel.isVisible()) {
+            // Deselecting the card
+            selectedCount--; // Decrease selected count upon unselection
+            eraseSelectedCard(value, suit);
+            checkMarkLabel.setVisible(false); // Hide checkmark
+            updateOutputArea(); // Update the output area at the bottom
+        } else if (selectedCount < 4) { // Check if less than 4 cards are selected
+            selectedCards[selectedCount] = value + " of " + suit; // Format selected card to display correctly
+            selectedCount++; // Increase count
+            checkMarkLabel.setVisible(true); // Show checkmark
+            updateOutputArea(); // Update the output area at the bottom
+        } else {
+            JOptionPane.showMessageDialog(null, "You can only select 4 cards!"); // Error message
+            return;
+        }
+
         if (selectedCount == 4) {
-            // TO DO: Once 4 cards are selected run the code
-            // TO DO: If 4 cards are not matched to any, allow a total of 3 tries
-            // TO DO: If cards selected have X amount of matches, identify how many matches,
-            // but dont show which one
-            // TO DO: if all cards match, have use guess what the pattern is: Example: Four
-            // Hearts or All Queens, Etc.
+            checkSelectedCards(); // Check if the maximum number of cards is selected
+        }
+    }
+
+    private void eraseSelectedCard(String value, String suit) {
+        String[] newSelectedCards = new String[4];
+        for (int i = 0; i < selectedCards.length; i++) {
+            if (selectedCards[i] != null && !selectedCards[i].equals(value + " of " + suit)) {
+                newSelectedCards[i] = selectedCards[i];
+            }
         }
     }
 
@@ -168,9 +206,145 @@ public class K2GradeWindow {
         StringBuilder output = new StringBuilder("Selected Cards:\n");
         for (String card : selectedCards) {
             if (card != null) {
-                output.append(card).append("\n");
+                output.append(card).append(", ");
             }
         }
-        outputArea.setText(output.toString()); // Set text of output area
+
+        // Remove the last comma and space if there are any selected cards
+        if (selectedCount > 0) {
+            output.setLength(output.length() - 2);
+        }
+        outputArea.setText(output.toString()); // Update the output area
+    }
+
+    // Method to reset all selections and remove checkmarks
+    private void resetSelections() {
+        selectedCount = 0; // Reset selected count
+        Arrays.fill(selectedCards, null); // Clear selected cards
+
+        // Loop through all components in the main panel to hide checkmarks
+        for (Component component : mainPanel.getComponents()) {
+            if (component instanceof JLayeredPane) {
+                JLayeredPane layeredPane = (JLayeredPane) component;
+                for (Component layer : layeredPane.getComponents()) {
+                    if (layer instanceof JLabel) {
+                        JLabel label = (JLabel) layer;
+                        // Check if it is the checkmark label and hide it
+                        if (label.getIcon() == checkMarkIcon) {
+                            label.setVisible(false); // Hide checkmark
+                        }
+                    }
+                }
+            }
+        }
+        updateOutputArea(); // Clear output area
+    }
+
+    // Method to check if 4 cards are selected and confirm with the user
+    private void checkSelectedCards() {
+        if (selectedCount == 4) {
+            // Build a message to display the selected cards
+            StringBuilder selectedMessage = new StringBuilder("Are you sure these are the four cards?\n");
+            for (String card : selectedCards) {
+                if (card != null) {
+                    selectedMessage.append(card).append("\n");
+                }
+            }
+
+            // Display a confirmation dialog asking if the user is sure
+            int response = JOptionPane.showConfirmDialog(null, selectedMessage.toString(), "Confirm Selection",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            // Handle the user's response
+            if (response == JOptionPane.YES_OPTION) {
+                // User confirmed their selection, proceed with the game logic
+                System.out.println("User confirmed their selection. Proceeding...");
+
+                // Create an instance of ArtDealerGameK2 and check matching cards
+                // ArtDealerGameK2 game = new ArtDealerGameK2();
+                BooleanStringPair result = game.checkMatchingCards(selectedCards); // Check for matching cards
+                // Show the result in a message dialog
+                JOptionPane.showMessageDialog(null, result.msg(), "Matching Cards Result",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                if (result.successful()) {
+                    // Show balloon popup
+                    ImageIcon balloonIcon = new ImageIcon(getClass().getResource("/resources/balloons.jpg"));
+                    JOptionPane.showMessageDialog(null, "Congratulations! You guessed it right!", "Correct!",
+                            JOptionPane.INFORMATION_MESSAGE, balloonIcon); 
+                            System.out.println("K2GRADEWINDOW: WON THE GAME: GAME RESET");
+                            game.resetGame(); // Reset the game for the next round 
+                    return;
+                    
+                }
+
+                // Increment the attempt count
+                attemptCount++;
+
+                // Update guess status label
+                updateGuessStatusLabel();
+
+                // Check if the user has reached the maximum attempts
+                if (attemptCount >= 3) {
+                    // Give user the option to guess the pattern
+                    // TO DO: Fix, it doesn't show up
+                    showPatternSelectionOptions(guessedPattern -> {
+                        // Compare guessed pattern with the dealer's pattern
+                        if (guessedPattern.equals(game.getDealerPattern())) {
+                            JOptionPane.showMessageDialog(null, "Congratulations! You guessed the pattern correctly!",
+                                    "Pattern Guess", JOptionPane.INFORMATION_MESSAGE);
+
+                                game.resetGame();   
+                                attemptCount = 0; // Reset attempts for the next round
+                                updateGuessStatusLabel(); // Update the guess status label                     
+                            } else {
+                            JOptionPane.showMessageDialog(null,
+                                    "Sorry! Your guess was incorrect. The pattern was: " + game.getDealerPattern(),
+                                    "Pattern Guess", JOptionPane.ERROR_MESSAGE);
+                        }
+
+                        // Reset for the next round if the guess was correct or incorrect
+                        attemptCount = 0; // Reset attempts for the next round
+                        updateOutputArea(); // Clear output area
+                    });
+
+                }
+
+                // // Reset selections if the guess was incorrect
+                resetSelections(); // Reset all selections
+            } else {
+                // User chose "No", allow them to continue selecting/changing cards
+                System.out.println("User wants to change their selection.");
+                resetSelections(); // Reset all selections
+
+            }
+        }
+    }
+
+    public void showPatternSelectionOptions(java.util.function.Consumer<String> callback) {
+        // Step 1: Create a new JFrame (the window)
+        JFrame frame = new JFrame("JComboBox Example");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 300); // Set the size of the window
+
+        // Step 2: Set a layout and add the JComboBox to the frame
+        frame.setLayout(new java.awt.FlowLayout()); // Simple layout for the example
+        frame.add(patternGuessComboBox); // Add the comboBox to the frame
+
+        JButton submitButton = new JButton("Submit");
+        submitButton.setBackground(Color.BLACK); // Set background color to black
+        submitButton.setForeground(Color.GREEN); // Set text color to green
+        submitButton.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
+
+        submitButton.addActionListener(e -> {
+            String aguessedPattern = (String) patternGuessComboBox.getSelectedItem();
+            frame.dispose(); // Close this window
+            callback.accept(aguessedPattern); // Call the callback with the guessed pattern
+        });
+
+        frame.add(submitButton); // Add the submit button to the frame
+
+        // Step 3: Make the frame visible
+        frame.setVisible(true);
     }
 }

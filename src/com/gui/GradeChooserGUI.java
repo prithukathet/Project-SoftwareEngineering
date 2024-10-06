@@ -9,7 +9,8 @@ import java.io.IOException;
 public class GradeChooserGUI {
 
     // Store the Clip instance so we can stop it later -- must be global
-    private static Clip clip;
+    private static Clip welcomeClip;
+    private static Clip backgroundClip;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -24,14 +25,16 @@ public class GradeChooserGUI {
             JButton buttonK2 = createGradeButton("K-2");
             JButton button35 = createGradeButton("3-5");
             JButton button68 = createGradeButton("6-8");
+            JButton instructionsButton = createGradeButton("Instructions");
 
             // Add action listeners to buttons to handle grade selection
             buttonK2.addActionListener(e -> handleGradeButtonClick(frame, "K-2"));
             button35.addActionListener(e -> handleGradeButtonClick(frame, "3-5"));
             button68.addActionListener(e -> handleGradeButtonClick(frame, "6-8"));
+            instructionsButton.addActionListener(e -> handleGradeButtonClick(frame, "Instructions"));
 
             // Add components to the panel with spacing
-            addComponentsToPanel(panel, choosegradetxt, buttonK2, button35, button68, createdbytxt);
+            addComponentsToPanel(panel, choosegradetxt, buttonK2, button35, button68, instructionsButton, createdbytxt);
 
             // Add the panel to the frame
             frame.add(panel);
@@ -44,7 +47,13 @@ public class GradeChooserGUI {
             frame.setVisible(true);
 
             // Play background music when the application opens
-            playMusic("src/resources/background.wav");
+            welcomeClip = createClip();
+            playMusic("src/resources/welcome.wav", false, welcomeClip);
+
+            backgroundClip = createClip();
+
+        // Play the background music with welcome.wav overlapping
+         playBackgroundMusic();
 
             // Stop music when the window is closed
             frame.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -110,7 +119,7 @@ public class GradeChooserGUI {
 
     // Add components to the panel with appropriate spacing
     private static void addComponentsToPanel(JPanel panel, JLabel choosegradetxt, JButton buttonK2, JButton button35,
-            JButton button68, JLabel createdbytxt) {
+            JButton button68, JButton instructionsButton, JLabel createdbytxt) {
         panel.add(Box.createRigidArea(new Dimension(0, 20))); // Space at the top
         panel.add(choosegradetxt);
         panel.add(Box.createRigidArea(new Dimension(0, 20))); // Space between the label and buttons
@@ -120,38 +129,64 @@ public class GradeChooserGUI {
         panel.add(button35);
         panel.add(Box.createRigidArea(new Dimension(0, 10))); // Space between buttons
         panel.add(button68);
+        panel.add(Box.createRigidArea(new Dimension(0, 10))); // Space between buttons
+        panel.add(instructionsButton);
         panel.add(Box.createHorizontalGlue()); // Adding glue after buttons
         panel.add(Box.createRigidArea(new Dimension(0, 20))); // Space at the bottom
         panel.add(createdbytxt);
     }
 
+    // Create a new Clip instance
+    private static Clip createClip() {
+        try {
+            return AudioSystem.getClip();
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     // Play music using javax.sound.sampled
-    private static void playMusic(String filepath) {
+    private static void playMusic(String filepath, boolean loop, Clip clip) {
         try {
             // Open an audio input stream from the provided file path
             File soundFile = new File(filepath);
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
-
+    
             // Get the audio clip and open it with the stream
-            clip = AudioSystem.getClip();
             clip.open(audioStream);
 
+            // Adjust the volume
+            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            gainControl.setValue(-20.f); // Set the volume (in decibels)
+    
             // Start playing the clip
             clip.start();
-
-            // Optional: loop the clip continuously
-            clip.loop(Clip.LOOP_CONTINUOUSLY); // Comment this line out if you don't want looping
-
+    
+            // Loop the clip continuously if needed
+            if (loop) {
+                clip.loop(Clip.LOOP_CONTINUOUSLY);
+            }
+    
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
     }
 
+    // Play background music in a loop
+    private static void playBackgroundMusic() {
+        playMusic("src/resources/background.wav", true, backgroundClip); // Ensure this file exists
+    }
+
     // Stop the music upon opening another window
     private static void stopMusic() {
-        if (clip != null && clip.isRunning()) {
-            clip.stop(); // Stop the music
-            clip.close(); // Release system resources to free up space
+        if (welcomeClip != null && welcomeClip.isRunning()) {
+            welcomeClip.stop(); // Stop the welcome music
+            welcomeClip.close(); // Release system resources to free up space
+        }
+        if (backgroundClip != null && backgroundClip.isRunning()) {
+            backgroundClip.stop(); // Stop the background music
+            backgroundClip.close(); // Release system resources to free up space
         }
     }
 
@@ -166,6 +201,9 @@ public class GradeChooserGUI {
                 break;
             case "6-8":
                 new Grade68Window(); // Ensure this class is defined
+                break;
+            case "Instructions":
+                new InstructionsWindow(); // Ensure this class is defined
                 break;
             default:
                 break;

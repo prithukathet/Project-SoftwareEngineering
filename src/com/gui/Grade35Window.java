@@ -8,8 +8,8 @@ import java.util.Arrays;
 import com.artdealergame.ArtDealerGame35;
 import com.artdealergame.ArtDealerGame35.BooleanStringPair;
 
-import javafx.event.ActionEvent;
-import java.awt.event.ActionListener;
+// import javafx.event.ActionEvent;
+// import java.awt.event.ActionListener;
 
 public class Grade35Window {
     protected static final String True = null;
@@ -22,6 +22,7 @@ public class Grade35Window {
     private JPanel mainPanel; // Declare mainPanel as a class member
     private ImageIcon checkMarkIcon; // Declare checkMarkIcon as a class member
     private ArtDealerGame35 game; // Declare game as a class member
+    private JLabel guessStatusLabel; // Declare the JLabel to display guess status
 
     public Grade35Window() {
         // Initialize the game instance
@@ -51,6 +52,12 @@ public class Grade35Window {
         chooseLevelButton.setBackground(Color.BLACK); // Set background color to black
         chooseLevelButton.setForeground(Color.GREEN); // Set text color to green
         chooseLevelButton.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
+        chooseLevelButton.setFocusable(false);
+
+        // Initialize the guess status label
+        guessStatusLabel = new JLabel("<html>Attempts: 0<br>Remaining: 3</html>"); // Initial message
+        guessStatusLabel.setForeground(Color.GREEN); // Set text color to green
+        guessStatusLabel.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
 
         // Add the button to the instruction panel (far right) with event listener
         instructionPanel.add(chooseLevelButton, BorderLayout.EAST);
@@ -68,10 +75,12 @@ public class Grade35Window {
         JPanel bottomPanel = new JPanel(); // Panel for output messages
         bottomPanel.setPreferredSize(new Dimension(0, 120)); // Set height of the bottom panel to 100 pixels
         bottomPanel.setBackground(Color.BLACK);
+        bottomPanel.add(guessStatusLabel); // Add the label to the bottom panel
 
         // Card suits and values
         String[] suits = { "Hearts", "Diamonds", "Clubs", "Spades" };
-        String[] values = { "Ace", "King", "Queen", "Jack", "10", "9", "8", "7", "6", "5", "4", "3", "2" };
+        String[] values = { "Ace", "King", "Queen", "Jack", "10", "9", "8", "7", "6", "5", "4",
+                "3", "2" };
 
         // Icons for selected states
         checkMarkIcon = new ImageIcon(getClass().getResource("/resources/checkMarkIcon.png"));
@@ -116,8 +125,6 @@ public class Grade35Window {
                 // Add action listener for button clicks
                 layeredPane.addMouseListener(new java.awt.event.MouseAdapter() {
                     public void mouseClicked(java.awt.event.MouseEvent evt) {
-                        System.out.println("Clicked on card: " + value + " of " + suit);
-
                         handleCardSelection(layeredPane, checkMarkLabel, value, suit);
                     }
                 });
@@ -153,6 +160,13 @@ public class Grade35Window {
         return resizedImage;
     }
 
+    private void updateGuessStatusLabel() {
+        int remainingAttempts = 3 - attemptCount; // Assuming maximum attempts are 3
+        guessStatusLabel.setText("<html>Attempts: " + attemptCount + "<br>Remaining: " + remainingAttempts + "</html>");
+        guessStatusLabel.revalidate(); // Revalidate to ensure the label is updated
+        guessStatusLabel.repaint(); // Repaint to reflect the changes
+    }
+
     // Handle card selection
     private void handleCardSelection(JLayeredPane layeredPane, JLabel checkMarkLabel, String value, String suit) {
         if (checkMarkLabel.isVisible()) {
@@ -183,17 +197,6 @@ public class Grade35Window {
                 newSelectedCards[i] = selectedCards[i];
             }
         }
-    }
-
-    // Method to find the index of the deselected card
-    private int findCardIndex(String value, String suit) {
-        for (int i = 0; i < selectedCards.length; i++) {
-            if (selectedCards[i] != null && selectedCards[i].equals(value + " of " + suit)) {
-                return i;
-            }
-        }
-        System.out.println("Card not found: " + value + " of " + suit);
-        return -1; // Return -1 if not found
     }
 
     // Method to update the output area with selected cards
@@ -263,30 +266,34 @@ public class Grade35Window {
                         JOptionPane.INFORMATION_MESSAGE);
 
                 if (result.successful()) {
-                    // TODO: Display a success message
-
                     // Show balloon popup
                     ImageIcon balloonIcon = new ImageIcon(getClass().getResource("/resources/balloons.jpg"));
                     JOptionPane.showMessageDialog(null, "Congratulations! You guessed it right!", "Correct!",
-                            JOptionPane.INFORMATION_MESSAGE, balloonIcon);
+                            JOptionPane.INFORMATION_MESSAGE, balloonIcon); 
+                            System.out.println("WON THE GAME: GAME RESET");
+                            game.resetGame(); // Reset the game for the next round 
                     return;
+                    
                 }
 
                 // Increment the attempt count
                 attemptCount++;
 
+                // Update guess status label
+                updateGuessStatusLabel();
+
                 // Check if the user has reached the maximum attempts
                 if (attemptCount >= 3) {
                     // Give user the option to guess the pattern
-                    // TODO: Fix, it doesn't show up
+                    // TO DO: Fix, it doesn't show up
                     showPatternSelectionOptions(guessedPattern -> {
                         // Compare guessed pattern with the dealer's pattern
                         if (guessedPattern.equals(game.getDealerPattern())) {
                             JOptionPane.showMessageDialog(null, "Congratulations! You guessed the pattern correctly!",
                                     "Pattern Guess", JOptionPane.INFORMATION_MESSAGE);
 
-                            // TODO: Then what? end game, new game etc..
-                        } else {
+                                game.resetGame();                        
+                            } else {
                             JOptionPane.showMessageDialog(null,
                                     "Sorry! Your guess was incorrect. The pattern was: " + game.getDealerPattern(),
                                     "Pattern Guess", JOptionPane.ERROR_MESSAGE);
@@ -295,30 +302,8 @@ public class Grade35Window {
                         // Reset for the next round if the guess was correct or incorrect
                         attemptCount = 0; // Reset attempts for the next round
                         updateOutputArea(); // Clear output area
-                        // Reset dealer's pattern for the next round
-                        // game.resetGame(); // Call the method to reset the dealer's pattern
                     });
 
-                    // String guessedPattern = (String) patternGuessComboBox.getSelectedItem();
-                    // // Compare guessed pattern with the dealer's pattern
-                    // if (guessedPattern.equals(game.getDealerPattern())) {
-                    // JOptionPane.showMessageDialog(null, "Congratulations! You guessed the pattern
-                    // correctly!",
-                    // "Pattern Guess", JOptionPane.INFORMATION_MESSAGE);
-
-                    // // TODO: Then what? end game, new game etc..
-                    // } else {
-                    // JOptionPane.showMessageDialog(null,
-                    // "Sorry! Your guess was incorrect. The pattern was: " +
-                    // game.getDealerPattern(),
-                    // "Pattern Guess", JOptionPane.ERROR_MESSAGE);
-                    // }
-
-                    // // Reset for the next round if the guess was correct or incorrect
-                    // attemptCount = 0; // Reset attempts for the next round
-                    // updateOutputArea(); // Clear output area
-                    // // Reset dealer's pattern for the next round
-                    // // game.resetGame(); // Call the method to reset the dealer's pattern
                 }
 
                 // // Reset selections if the guess was incorrect
@@ -326,6 +311,8 @@ public class Grade35Window {
             } else {
                 // User chose "No", allow them to continue selecting/changing cards
                 System.out.println("User wants to change their selection.");
+                resetSelections(); // Reset all selections
+
             }
         }
     }
@@ -346,9 +333,9 @@ public class Grade35Window {
         submitButton.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
 
         submitButton.addActionListener(e -> {
-            String guessedPattern = (String) patternGuessComboBox.getSelectedItem();
+            String aguessedPattern = (String) patternGuessComboBox.getSelectedItem();
             frame.dispose(); // Close this window
-            callback.accept(guessedPattern); // Call the callback with the guessed pattern
+            callback.accept(aguessedPattern); // Call the callback with the guessed pattern
         });
 
         frame.add(submitButton); // Add the submit button to the frame

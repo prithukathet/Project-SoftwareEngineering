@@ -2,26 +2,6 @@ package com.options;
 
 public class PatternK2 {
 
-	// Constants for suits and ranks
-	private static final String HEARTS = "Hearts";
-	private static final String DIAMONDS = "Diamonds";
-	private static final String SPADES = "Spades";
-	private static final String CLUBS = "Clubs";
-
-	private static final String QUEEN = "Queen";
-	private static final String KING = "King";
-	private static final String ACE = "Ace";
-	private static final String JACK = "Jack";
-	private static final String TEN = "10";
-	private static final String NINE = "9";
-	private static final String EIGHT = "8";
-	private static final String SEVEN = "7";
-	private static final String SIX = "6";
-	private static final String FIVE = "5";
-	private static final String FOUR = "4";
-	private static final String THREE = "3";
-	private static final String TWO = "2";
-
 	// Check if all cards match a given type (suit or rank)
 	public static boolean allCardsOfType(String[] cards, String type) {
 		for (String card : cards) {
@@ -34,11 +14,11 @@ public class PatternK2 {
 
 	// Specific methods to check all types
 	public static boolean allRed(String card) {
-        return card.contains("Hearts") || card.contains("DIAMONDS");
+        return card.contains("Hearts") || card.contains("Diamonds");
 	}
 
 	public static boolean allBlack(String card) {
-        return card.contains("Clubs") || card.contains("SPADES");
+        return card.contains("Clubs") || card.contains("Spades");
 	}
 
 	public static boolean allAces(String card) {
@@ -57,39 +37,39 @@ public class PatternK2 {
 	}
 
 	public static boolean allTens(String card) {
-		return card.contains("Ten");
+		return card.contains("Ten") || card.contains("10");
 	}
 
 	public static boolean allNines(String card) {
-		return card.contains("Nine");
+		return card.contains("Nine") || card.contains("9");
 	}
 
 	public static boolean allEights(String card) {
-		return acard.contains("Eight");
+		return card.contains("Eight") || card.contains("8");
 	}
 
 	public static boolean allSevens(String card) {
-		return card.contains("Seven");
+		return card.contains("Seven") || card.contains("7");
 	}
 
 	public static boolean allSixes(String card) {
-		return card.contains("Six");
+		return card.contains("Six") || card.contains("6");
 	}
 
 	public static boolean allFives(String card) {
-		return card.contains("Five");
+		return card.contains("Five") || card.contains("5");
 	}
 
 	public static boolean allFours(String card) {
-		return card.contains("Four");
+		return card.contains("Four") || card.contains("4");
 	}
 
 	public static boolean allThrees(String card) {
-		return card.contains("Three");
+		return card.contains("Three") || card.contains("3");
 	}
 
 	public static boolean allTwos(String card) {
-		return card.contains("Two");
+		return card.contains("Two") || card.contains("2");
 	}
 
 	public static boolean allHearts(String card) {
