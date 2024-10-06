@@ -4,6 +4,13 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.Arrays;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import java.io.File;
 
 import com.artdealergame.ArtDealerGameK2;
 import com.artdealergame.ArtDealerGameK2.BooleanStringPair;
@@ -293,11 +300,57 @@ public class K2GradeWindow {
                         if (guessedPattern.equals(game.getDealerPattern())) {
                             JOptionPane.showMessageDialog(null, "Congratulations! You guessed the pattern correctly!",
                                     "Pattern Guess", JOptionPane.INFORMATION_MESSAGE);
+                        
+                            // Play cheer sound
+                            //new SoundPlayer().playCheerSound();
+                        
+                            JFrame balloonFrame = new JFrame("Celebration!");
+                            balloonFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                            balloonFrame.setSize(500, 500);
 
-                                game.resetGame();   
-                                attemptCount = 0; // Reset attempts for the next round
-                                updateGuessStatusLabel(); // Update the guess status label                     
+                            // Create the BalloonPanel and set its background to black
+                            BalloonPanel balloonPanel = new BalloonPanel();
+                            balloonPanel.setBackground(Color.BLACK);  // Set the background of the panel to black
+                            balloonPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5));  // Neon green border
+
+                            balloonFrame.add(balloonPanel);
+
+                            // Play cheer sound with looping
+                            SoundPlayer soundPlayer = new SoundPlayer();
+                            soundPlayer.playCheerSound();  // Start playing and looping the sound
+
+                            // Add a listener to stop the sound when the window is closed
+                            balloonFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+                                @Override
+                                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                                    soundPlayer.stopCheerSound();  // Stop the sound when window closes
+                                }
+                            });
+
+                            // Show the balloon frame for the celebration
+                            balloonFrame.setVisible(true);
+
+                            // Reset the game for the next round
+                            //game.resetGame();
+
+                            // Ask the user if they want to play again or quit
+                            int playAgainResponse = JOptionPane.showConfirmDialog(null, 
+                                    "The game has been reset. Do you want to play again?", 
+                                    "Play Again?", 
+                                    JOptionPane.YES_NO_OPTION, 
+                                    JOptionPane.QUESTION_MESSAGE);
+
+                            if (playAgainResponse == JOptionPane.YES_OPTION) {
+                                // User chose to play again, reset the game again or start a new round
+                                game.resetGame();  // Reset the game state again
+                                System.out.println("DEBUG: User chose to play again.");
                             } else {
+                                // User chose not to play again, quit the application
+                                System.out.println("DEBUG: User chose to quit.");
+                                System.exit(0);  // Quit the application
+                            }
+                            
+                        } else {
                             JOptionPane.showMessageDialog(null,
                                     "Sorry! Your guess was incorrect. The pattern was: " + game.getDealerPattern(),
                                     "Pattern Guess", JOptionPane.ERROR_MESSAGE);
@@ -347,4 +400,67 @@ public class K2GradeWindow {
         // Step 3: Make the frame visible
         frame.setVisible(true);
     }
+
+    class BalloonPanel extends JPanel {
+        private ArrayList<Point> balloonPositions = new ArrayList<>();
+        private Timer timer;
+    
+        public BalloonPanel() {
+            // Add starting positions for balloons
+            for (int i = 0; i < 10; i++) {
+                balloonPositions.add(new Point((int)(Math.random() * 400), 400 + i * 40));  // Random horizontal positions
+            }
+    
+            // Create timer to move balloons upwards
+            timer = new Timer(50, new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    moveBalloons();
+                    repaint();
+                }
+            });
+            timer.start();  // Start the animation
+        }
+    
+        private void moveBalloons() {
+            for (Point p : balloonPositions) {
+                p.y -= 5;  // Move the balloon upwards
+                if (p.y < -50) {  // Reset balloon if it moves off screen
+                    p.y = 400;
+                }
+            }
+        }
+    
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            g.setColor(Color.RED);
+            for (Point p : balloonPositions) {
+                g.fillOval(p.x, p.y, 30, 50);  // Draw each balloon
+            }
+        }
+    }
+    
+    public class SoundPlayer {
+        private Clip clip;  // Store the Clip to control it
+    
+        public void playCheerSound() {
+            try {
+                File soundFile = new File("src/resources/cheer.wav");  // Replace with your cheer sound file path
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
+                clip = AudioSystem.getClip();
+                clip.open(audioStream);
+                clip.loop(Clip.LOOP_CONTINUOUSLY);  // Loop the sound indefinitely
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    
+        public void stopCheerSound() {
+            if (clip != null && clip.isRunning()) {
+                clip.stop();  // Stop the sound
+            }
+        }
+    }
+
 }
+
