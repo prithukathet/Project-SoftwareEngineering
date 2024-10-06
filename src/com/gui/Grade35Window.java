@@ -3,9 +3,13 @@ package com.gui;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.util.Arrays;
 
-import com.artdealergame.ArtDealerGame3_5;
-import com.artdealergame.artdealergame;
+import com.artdealergame.ArtDealerGame35;
+import com.artdealergame.ArtDealerGame35.BooleanStringPair;
+
+import javafx.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class Grade35Window {
     protected static final String True = null;
@@ -13,16 +17,25 @@ public class Grade35Window {
     private String[] selectedCards = new String[4];
     private int selectedCount = 0; // Count of selected cards
     private JTextArea outputArea; // Declare outputArea as a class member
+    private int attemptCount = 0; // Count of attempts made by the user
+    private JComboBox<String> patternGuessComboBox; // Add this declaration
+    private JPanel mainPanel; // Declare mainPanel as a class member
+    private ImageIcon checkMarkIcon; // Declare checkMarkIcon as a class member
+    private ArtDealerGame35 game; // Declare game as a class member
 
     public Grade35Window() {
+        // Initialize the game instance
+        game = new ArtDealerGame35();
         // Create the 3-5 Main window frame
         JFrame G35Frame = new JFrame("Grade 3-5 - Card Values");
         G35Frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         G35Frame.setSize(1600, 700); // Increased height to accommodate output area
         G35Frame.setLocationRelativeTo(null); // Center the window
         G35Frame.setResizable(false); // Do not allow resizing
-        ImageIcon image = new ImageIcon(getClass().getResource("/com/resources/artdealer.jpg"));
+        ImageIcon image = new ImageIcon(getClass().getResource("/resources/artdealer.jpg"));
         G35Frame.setIconImage(image.getImage());
+
+        patternGuessComboBox = new JComboBox<>(game.getPatterns()); // Example initialization
 
         // Instruction Panel North
         JPanel instructionPanel = new JPanel(new BorderLayout());
@@ -47,7 +60,7 @@ public class Grade35Window {
         });
 
         // Main Panel with grid layout
-        JPanel mainPanel = new JPanel(new GridLayout(4, 13, 10, 10)); // 4 rows, 13 columns
+        mainPanel = new JPanel(new GridLayout(4, 13, 10, 10)); // 4 rows, 13 columns
         mainPanel.setBackground(Color.BLACK);
         mainPanel.setBorder(new LineBorder(Color.GREEN, 2)); // Set a neon green border with thickness 2
 
@@ -61,7 +74,7 @@ public class Grade35Window {
         String[] values = { "Ace", "King", "Queen", "Jack", "10", "9", "8", "7", "6", "5", "4", "3", "2" };
 
         // Icons for selected states
-        ImageIcon checkMarkIcon = new ImageIcon(getClass().getResource("/com/resources/checkMarkIcon.png"));
+        checkMarkIcon = new ImageIcon(getClass().getResource("/resources/checkMarkIcon.png"));
 
         // Desired size for card images
         int cardWidth = 85; // Adjust this value as needed
@@ -79,8 +92,7 @@ public class Grade35Window {
                 String cardFileName = value.toLowerCase() + "_of_" + suit.toLowerCase() + ".png";
 
                 // Load the image from the resources
-                ImageIcon cardIcon = new ImageIcon(
-                        getClass().getResource("/com/resources/playingCards/" + cardFileName));
+                ImageIcon cardIcon = new ImageIcon(getClass().getResource("/resources/playingCards/" + cardFileName));
 
                 // Resize the image
                 Image resizedImage = resizeImage(cardIcon.getImage(), cardWidth, cardHeight);
@@ -104,6 +116,8 @@ public class Grade35Window {
                 // Add action listener for button clicks
                 layeredPane.addMouseListener(new java.awt.event.MouseAdapter() {
                     public void mouseClicked(java.awt.event.MouseEvent evt) {
+                        System.out.println("Clicked on card: " + value + " of " + suit);
+
                         handleCardSelection(layeredPane, checkMarkLabel, value, suit);
                     }
                 });
@@ -144,19 +158,29 @@ public class Grade35Window {
         if (checkMarkLabel.isVisible()) {
             // Deselecting the card
             selectedCount--; // Decrease selected count upon unselection
-            selectedCards[findCardIndex(value, suit)] = null; // Deselect the card
+            eraseSelectedCard(value, suit);
             checkMarkLabel.setVisible(false); // Hide checkmark
             updateOutputArea(); // Update the output area at the bottom
+        } else if (selectedCount < 4) { // Check if less than 4 cards are selected
+            selectedCards[selectedCount] = value + " of " + suit; // Format selected card to display correctly
+            selectedCount++; // Increase count
+            checkMarkLabel.setVisible(true); // Show checkmark
+            updateOutputArea(); // Update the output area at the bottom
         } else {
-            // If the button is not selected
-            if (selectedCount < 4) { // Check if less than 4 cards are selected
-                selectedCards[selectedCount] = value + " of " + suit; // Format selected card to display correctly
-                selectedCount++; // Increase count
-                checkMarkLabel.setVisible(true); // Show checkmark
-                updateOutputArea(); // Update the output area at the bottom
-                checkSelectedCards(); // Check if the maximum number of cards is selected
-            } else {
-                JOptionPane.showMessageDialog(null, "You can only select 4 cards!"); // Error message
+            JOptionPane.showMessageDialog(null, "You can only select 4 cards!"); // Error message
+            return;
+        }
+
+        if (selectedCount == 4) {
+            checkSelectedCards(); // Check if the maximum number of cards is selected
+        }
+    }
+
+    private void eraseSelectedCard(String value, String suit) {
+        String[] newSelectedCards = new String[4];
+        for (int i = 0; i < selectedCards.length; i++) {
+            if (selectedCards[i] != null && !selectedCards[i].equals(value + " of " + suit)) {
+                newSelectedCards[i] = selectedCards[i];
             }
         }
     }
@@ -168,6 +192,7 @@ public class Grade35Window {
                 return i;
             }
         }
+        System.out.println("Card not found: " + value + " of " + suit);
         return -1; // Return -1 if not found
     }
 
@@ -179,7 +204,35 @@ public class Grade35Window {
                 output.append(card).append(", ");
             }
         }
-        outputArea.setText(output.toString()); // Set text of output area
+
+        // Remove the last comma and space if there are any selected cards
+        if (selectedCount > 0) {
+            output.setLength(output.length() - 2);
+        }
+        outputArea.setText(output.toString()); // Update the output area
+    }
+
+    // Method to reset all selections and remove checkmarks
+    private void resetSelections() {
+        selectedCount = 0; // Reset selected count
+        Arrays.fill(selectedCards, null); // Clear selected cards
+
+        // Loop through all components in the main panel to hide checkmarks
+        for (Component component : mainPanel.getComponents()) {
+            if (component instanceof JLayeredPane) {
+                JLayeredPane layeredPane = (JLayeredPane) component;
+                for (Component layer : layeredPane.getComponents()) {
+                    if (layer instanceof JLabel) {
+                        JLabel label = (JLabel) layer;
+                        // Check if it is the checkmark label and hide it
+                        if (label.getIcon() == checkMarkIcon) {
+                            label.setVisible(false); // Hide checkmark
+                        }
+                    }
+                }
+            }
+        }
+        updateOutputArea(); // Clear output area
     }
 
     // Method to check if 4 cards are selected and confirm with the user
@@ -201,11 +254,106 @@ public class Grade35Window {
             if (response == JOptionPane.YES_OPTION) {
                 // User confirmed their selection, proceed with the game logic
                 System.out.println("User confirmed their selection. Proceeding...");
-                // You can call the logic to check for matches or the pattern here
+
+                // Create an instance of ArtDealerGame35 and check matching cards
+                // ArtDealerGame35 game = new ArtDealerGame35();
+                BooleanStringPair result = game.checkMatchingCards(selectedCards); // Check for matching cards
+                // Show the result in a message dialog
+                JOptionPane.showMessageDialog(null, result.msg(), "Matching Cards Result",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                if (result.successful()) {
+                    // TODO: Display a success message
+
+                    // Show balloon popup
+                    ImageIcon balloonIcon = new ImageIcon(getClass().getResource("/resources/balloons.jpg"));
+                    JOptionPane.showMessageDialog(null, "Congratulations! You guessed it right!", "Correct!",
+                            JOptionPane.INFORMATION_MESSAGE, balloonIcon);
+                    return;
+                }
+
+                // Increment the attempt count
+                attemptCount++;
+
+                // Check if the user has reached the maximum attempts
+                if (attemptCount >= 3) {
+                    // Give user the option to guess the pattern
+                    // TODO: Fix, it doesn't show up
+                    showPatternSelectionOptions(guessedPattern -> {
+                        // Compare guessed pattern with the dealer's pattern
+                        if (guessedPattern.equals(game.getDealerPattern())) {
+                            JOptionPane.showMessageDialog(null, "Congratulations! You guessed the pattern correctly!",
+                                    "Pattern Guess", JOptionPane.INFORMATION_MESSAGE);
+
+                            // TODO: Then what? end game, new game etc..
+                        } else {
+                            JOptionPane.showMessageDialog(null,
+                                    "Sorry! Your guess was incorrect. The pattern was: " + game.getDealerPattern(),
+                                    "Pattern Guess", JOptionPane.ERROR_MESSAGE);
+                        }
+
+                        // Reset for the next round if the guess was correct or incorrect
+                        attemptCount = 0; // Reset attempts for the next round
+                        updateOutputArea(); // Clear output area
+                        // Reset dealer's pattern for the next round
+                        // game.resetGame(); // Call the method to reset the dealer's pattern
+                    });
+
+                    // String guessedPattern = (String) patternGuessComboBox.getSelectedItem();
+                    // // Compare guessed pattern with the dealer's pattern
+                    // if (guessedPattern.equals(game.getDealerPattern())) {
+                    // JOptionPane.showMessageDialog(null, "Congratulations! You guessed the pattern
+                    // correctly!",
+                    // "Pattern Guess", JOptionPane.INFORMATION_MESSAGE);
+
+                    // // TODO: Then what? end game, new game etc..
+                    // } else {
+                    // JOptionPane.showMessageDialog(null,
+                    // "Sorry! Your guess was incorrect. The pattern was: " +
+                    // game.getDealerPattern(),
+                    // "Pattern Guess", JOptionPane.ERROR_MESSAGE);
+                    // }
+
+                    // // Reset for the next round if the guess was correct or incorrect
+                    // attemptCount = 0; // Reset attempts for the next round
+                    // updateOutputArea(); // Clear output area
+                    // // Reset dealer's pattern for the next round
+                    // // game.resetGame(); // Call the method to reset the dealer's pattern
+                }
+
+                // // Reset selections if the guess was incorrect
+                resetSelections(); // Reset all selections
             } else {
                 // User chose "No", allow them to continue selecting/changing cards
                 System.out.println("User wants to change their selection.");
             }
         }
+    }
+
+    public void showPatternSelectionOptions(java.util.function.Consumer<String> callback) {
+        // Step 1: Create a new JFrame (the window)
+        JFrame frame = new JFrame("JComboBox Example");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 300); // Set the size of the window
+
+        // Step 2: Set a layout and add the JComboBox to the frame
+        frame.setLayout(new java.awt.FlowLayout()); // Simple layout for the example
+        frame.add(patternGuessComboBox); // Add the comboBox to the frame
+
+        JButton submitButton = new JButton("Submit");
+        submitButton.setBackground(Color.BLACK); // Set background color to black
+        submitButton.setForeground(Color.GREEN); // Set text color to green
+        submitButton.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
+
+        submitButton.addActionListener(e -> {
+            String guessedPattern = (String) patternGuessComboBox.getSelectedItem();
+            frame.dispose(); // Close this window
+            callback.accept(guessedPattern); // Call the callback with the guessed pattern
+        });
+
+        frame.add(submitButton); // Add the submit button to the frame
+
+        // Step 3: Make the frame visible
+        frame.setVisible(true);
     }
 }

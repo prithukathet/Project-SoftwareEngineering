@@ -1,6 +1,6 @@
 package com.options;
 
-public class Pattern6_8 {
+public class Pattern68 {
 
 	public boolean flush(String[] cards) {
 		String suit = cards[0].split(" ")[2]; // Get the suit of the first card

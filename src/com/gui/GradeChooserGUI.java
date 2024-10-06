@@ -37,14 +37,14 @@ public class GradeChooserGUI {
             frame.add(panel);
 
             // Changes Icon of the window
-            ImageIcon image = new ImageIcon("src/com/resources/artdealer.jpg");
+            ImageIcon image = new ImageIcon("src/resources/artdealer.jpg");
             frame.setIconImage(image.getImage());
 
             // Makes the frame visible
             frame.setVisible(true);
 
             // Play background music when the application opens
-            playMusic("src/com/resources/background.wav");
+            playMusic("src/resources/background.wav");
 
             // Stop music when the window is closed
             frame.addWindowListener(new java.awt.event.WindowAdapter() {
