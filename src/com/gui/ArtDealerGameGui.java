@@ -5,9 +5,11 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.Arrays;
 
-import com.artdealergame.ArtDealerGameK2;
+import com.artdealergame.ArtDealerGameBase;
+import com.artdealergame.ArtDealerGameFactory;
+import com.artdealergame.GameType;
 
-public class K2GradeWindow {
+public class ArtDealerGameGui {
     protected static final String True = null;
     // Array to store selected cards
     private String[] selectedCards = new String[4];
@@ -17,14 +19,26 @@ public class K2GradeWindow {
     private JComboBox<String> patternGuessComboBox; // Add this declaration
     private JPanel mainPanel; // Declare mainPanel as a class member
     private ImageIcon checkMarkIcon; // Declare checkMarkIcon as a class member
-    private ArtDealerGameK2 game; // Declare game as a class member
+    private ArtDealerGameBase game; // Declare game as a class member
     private JLabel guessStatusLabel; // Declare the JLabel to display guess status
 
-    public K2GradeWindow() {
+    public ArtDealerGameGui(GameType gameType) {
         // Initialize the game instance
-        game = new ArtDealerGameK2();
+        game = ArtDealerGameFactory.createGame(gameType);
         // Create the K-2 Main window frame
-        JFrame K2Frame = new JFrame("Grade K-2 - Card Values");
+        String windowName = "";
+        switch (gameType) {
+        case GAMEK2:
+            windowName = "Grade K-2 - Card Values";
+            break;
+        case GAME35:
+            windowName = "Grade 3-5 - Card Values";
+            break;
+        case GAME68:
+            windowName = "Grade 6-8 - Card Values";
+            break;
+        }
+        JFrame K2Frame = new JFrame(windowName);
         K2Frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         K2Frame.setSize(1600, 700); // Increased height to accommodate output area
         K2Frame.setLocationRelativeTo(null); // Center the window
@@ -32,6 +46,7 @@ public class K2GradeWindow {
         ImageIcon image = new ImageIcon(getClass().getResource("/resources/artdealer.jpg"));
         K2Frame.setIconImage(image.getImage());
 
+        // TODO: ensure the game is chosing the correct patterns for each gametype
         patternGuessComboBox = new JComboBox<>(game.getPatterns()); // Example initialization
 
         // Instruction Panel North
@@ -179,6 +194,7 @@ public class K2GradeWindow {
             updateOutputArea(); // Update the output area at the bottom
         } else {
             JOptionPane.showMessageDialog(null, "You can only select 4 cards!"); // Error message
+            System.out.println("DEBUG: line 197 was called"); // For debugging
             return;
         }
 
@@ -258,10 +274,7 @@ public class K2GradeWindow {
                 // User confirmed their selection, proceed with the game logic
                 System.out.println("User confirmed their selection. Proceeding...");
 
-                // Create an instance of ArtDealerGameK2 and check matching cards
-                // ArtDealerGameK2 game = new ArtDealerGameK2();
-                // boolean result = game.checkMatchingCards(selectedCards); // Check for
-                // matching cards
+                // Create an instance of ArtDealerGame35 and check matching cards
                 int numMatches = 0;
                 StringBuilder matched = new StringBuilder();
                 matched.append("Cards Purchased by the Dealer:\n");
@@ -271,6 +284,7 @@ public class K2GradeWindow {
                         matched.append(card).append("\n");
                     }
                 }
+
                 // Show the result in a message dialog
                 JOptionPane.showMessageDialog(null, matched, "Matching Cards Result", JOptionPane.INFORMATION_MESSAGE);
 
@@ -280,9 +294,6 @@ public class K2GradeWindow {
                         if (guessedPattern.equals(game.getDealerPattern())) {
                             JOptionPane.showMessageDialog(null, "Congratulations! You guessed the pattern correctly!",
                                     "Pattern Guess", JOptionPane.INFORMATION_MESSAGE);
-
-                            // Play cheer sound
-                            // new SoundPlayer().playCheerSound();
 
                             JFrame balloonFrame = new JFrame("Celebration!");
                             balloonFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -310,9 +321,6 @@ public class K2GradeWindow {
                             // Show the balloon frame for the celebration
                             balloonFrame.setVisible(true);
 
-                            // Reset the game for the next round
-                            // game.resetGame();
-
                             // Ask the user if they want to play again or quit
                             int playAgainResponse = JOptionPane.showConfirmDialog(null,
                                     "The game has been reset. Do you want to play again?", "Play Again?",
@@ -321,8 +329,17 @@ public class K2GradeWindow {
                             if (playAgainResponse == JOptionPane.YES_OPTION) {
                                 // User chose to play again, reset the game again or start a new round
                                 game.resetGame(); // Reset the game state again
-                                System.out.println("DEBUG: User chose to play again.");
-                                // TODO: Fully exit k2 game and go back to main window
+                                System.out.println("Line 331: DEBUG: User chose to play again.");
+
+                                // This exits the current game window and goes back to gradechooser
+                                JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(mainPanel);
+                                if (currentFrame != null) {
+                                    currentFrame.dispose();
+                                }
+
+                                // GradeChooserGUI mainWindow = new GradeChooserGUI();
+                                GradeChooserGUI.main(new String[0]);
+
                             } else {
                                 // User chose not to play again, quit the application
                                 System.out.println("DEBUG: User chose to quit.");
@@ -332,10 +349,29 @@ public class K2GradeWindow {
                         } else {
                             if (attemptCount >= 3) {
                                 // They lost the game
+                                System.out.println("DEBUG: Line 352 was called"); // For debugging
                                 JOptionPane.showMessageDialog(null,
                                         "Sorry! Your guess was incorrect. The pattern was: " + game.getDealerPattern(),
                                         "Pattern Guess", JOptionPane.ERROR_MESSAGE);
-                                // TODO: Exit back to main menu of game
+
+                                System.out.println("DEBUG: Line 357 was called"); // For debugging
+
+                                // This exits the current game window and goes back to gradechooser
+                                JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(mainPanel);
+                                if (currentFrame != null) {
+                                    currentFrame.dispose();
+                                }
+                                System.out.println("DEBUG: Line 364 was called"); // For debugging
+                                // GradeChooserGUI mainWindow = new GradeChooserGUI();
+                                GradeChooserGUI.main(new String[0]);
+                            } else {
+                                if (attemptCount <= 3) {
+                                    JOptionPane.showMessageDialog(null,
+                                            "Sorry! Your guess was incorrect, please continue selecting cards\n",
+                                            "Pattern Guess", JOptionPane.ERROR_MESSAGE);
+                                    System.out.println("DEBUG: Line 372 was called"); // For debugging
+                                    return;
+                                }
                             }
                         }
                     });
@@ -347,7 +383,6 @@ public class K2GradeWindow {
                 // Check if the user has reached the maximum attempts
                 if (attemptCount >= 3) {
                     // Give user the option to guess the pattern
-                    // TO DO: Fix, it doesn't show up
                     showPatternSelectionOptions(guessedPattern -> {
                         // Compare guessed pattern with the dealer's pattern
                         if (guessedPattern.equals(game.getDealerPattern())) {
@@ -374,6 +409,7 @@ public class K2GradeWindow {
 
                             // Add a listener to stop the sound when the window is closed
                             balloonFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+
                                 @Override
                                 public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                                     soundPlayer.stopCheerSound(); // Stop the sound when window closes
@@ -382,9 +418,6 @@ public class K2GradeWindow {
 
                             // Show the balloon frame for the celebration
                             balloonFrame.setVisible(true);
-
-                            // Reset the game for the next round
-                            // game.resetGame();
 
                             // Ask the user if they want to play again or quit
                             int playAgainResponse = JOptionPane.showConfirmDialog(null,
@@ -404,22 +437,27 @@ public class K2GradeWindow {
                         } else {
                             JOptionPane.showMessageDialog(null,
                                     "Sorry! Your guess was incorrect. The pattern was: " + game.getDealerPattern(),
-                                    "Pattern Guess", JOptionPane.ERROR_MESSAGE);
-                            // TODO: Game over reset back to main menu
+                                    "Pattern Guess", JOptionPane.INFORMATION_MESSAGE);
+                            System.out.println("DEBUG: Line 441 was called"); // For debugging
+
+                            // TODO: Some reason, it continues popping up with the showoptionsdialog box and
+                            // it will not close.
+
+                            // GradeChooserGUI mainWindow = new GradeChooserGUI();
+                            GradeChooserGUI.main(new String[0]);
                         }
 
                         // Reset for the next round if the guess was correct or incorrect
                         attemptCount = 0; // Reset attempts for the next round
                         updateOutputArea(); // Clear output area
                     });
-
                 }
 
                 // // Reset selections if the guess was incorrect
                 resetSelections(); // Reset all selections
             } else {
                 // User chose "No", allow them to continue selecting/changing cards
-                System.out.println("User wants to change their selection.");
+                System.out.println("Line 461 User wants to change their selection.");
                 resetSelections(); // Reset all selections
             }
         }
@@ -427,9 +465,11 @@ public class K2GradeWindow {
 
     public void showPatternSelectionOptions(java.util.function.Consumer<String> callback) {
         // Step 1: Create a new JFrame (the window)
-        JFrame frame = new JFrame("JComboBox Example");
+        JFrame frame = new JFrame("Choose the Art Dealers pattern!"); // Create a new JFrame
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 300); // Set the size of the window
+        frame.setBackground(Color.black); // Set background color to black
+        frame.setForeground(Color.green); // Set text color to green
 
         // Step 2: Set a layout and add the JComboBox to the frame
         frame.setLayout(new java.awt.FlowLayout()); // Simple layout for the example
@@ -439,6 +479,9 @@ public class K2GradeWindow {
         submitButton.setBackground(Color.BLACK); // Set background color to black
         submitButton.setForeground(Color.GREEN); // Set text color to green
         submitButton.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
+        submitButton.setFocusable(false); // Disable focus
+        submitButton.setBackground(Color.BLACK); // Set background color to black
+        submitButton.setForeground(Color.GREEN); // Set text color to green
 
         submitButton.addActionListener(e -> {
             String aguessedPattern = (String) patternGuessComboBox.getSelectedItem();

@@ -1,7 +1,5 @@
 package com.artdealergame;
 
-import javax.swing.JOptionPane;
-
 import com.options.PatternBase;
 
 public class ArtDealerGameK2 extends ArtDealerGameBase {

@@ -6,6 +6,8 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
+import com.artdealergame.GameType;
+
 public class GradeChooserGUI {
 
     // Store the Clip instance so we can stop it later -- must be global
@@ -194,13 +196,13 @@ public class GradeChooserGUI {
     private static void openGradeWindow(String grade) {
         switch (grade) {
         case "K-2":
-            new K2GradeWindow(); // Ensure this class is defined
+            new ArtDealerGameGui(GameType.GAMEK2); // Ensure this class is defined
             break;
         case "3-5":
-            new Grade35Window(); // Ensure this class is defined
+            new ArtDealerGameGui(GameType.GAME35); // Ensure this class is defined
             break;
         case "6-8":
-            new Grade68Window(); // Ensure this class is defined
+            new ArtDealerGameGui(GameType.GAME68); // Ensure this class is defined
             break;
         case "Instructions":
             new InstructionsWindow(); // Ensure this class is defined
