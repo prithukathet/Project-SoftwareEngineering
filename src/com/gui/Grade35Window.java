@@ -6,10 +6,6 @@ import java.awt.*;
 import java.util.Arrays;
 
 import com.artdealergame.ArtDealerGame35;
-import com.artdealergame.ArtDealerGame35.BooleanStringPair;
-
-// import javafx.event.ActionEvent;
-// import java.awt.event.ActionListener;
 
 public class Grade35Window {
     protected static final String True = null;
@@ -79,8 +75,7 @@ public class Grade35Window {
 
         // Card suits and values
         String[] suits = { "Hearts", "Diamonds", "Clubs", "Spades" };
-        String[] values = { "Ace", "King", "Queen", "Jack", "10", "9", "8", "7", "6", "5", "4",
-                "3", "2" };
+        String[] values = { "Ace", "King", "Queen", "Jack", "10", "9", "8", "7", "6", "5", "4", "3", "2" };
 
         // Icons for selected states
         checkMarkIcon = new ImageIcon(getClass().getResource("/resources/checkMarkIcon.png"));
@@ -255,30 +250,92 @@ public class Grade35Window {
 
             // Handle the user's response
             if (response == JOptionPane.YES_OPTION) {
+                // Increment the attempt count
+                attemptCount++;
+
                 // User confirmed their selection, proceed with the game logic
                 System.out.println("User confirmed their selection. Proceeding...");
 
                 // Create an instance of ArtDealerGame35 and check matching cards
-                // ArtDealerGame35 game = new ArtDealerGame35();
-                BooleanStringPair result = game.checkMatchingCards(selectedCards); // Check for matching cards
-                // Show the result in a message dialog
-                JOptionPane.showMessageDialog(null, result.msg(), "Matching Cards Result",
-                        JOptionPane.INFORMATION_MESSAGE);
-
-                if (result.successful()) {
-                    // Show balloon popup
-                    ImageIcon balloonIcon = new ImageIcon(getClass().getResource("/resources/balloons.jpg"));
-                    JOptionPane.showMessageDialog(null, "Congratulations! You guessed it right!", "Correct!",
-                            JOptionPane.INFORMATION_MESSAGE, balloonIcon); 
-                            System.out.println("WON THE GAME: GAME RESET");
-                            game.resetGame(); // Reset the game for the next round 
-                    return;
-                    
+                int numMatches = 0;
+                StringBuilder matched = new StringBuilder();
+                matched.append("Cards Purchased by the Dealer:\n");
+                for (String card : selectedCards) {
+                    if (game.checkCardMatch(card)) {
+                        numMatches++;
+                        matched.append(card).append("\n");
+                    }
                 }
 
-                // Increment the attempt count
-                attemptCount++;
+                // Show the result in a message dialog
+                JOptionPane.showMessageDialog(null, matched, "Matching Cards Result", JOptionPane.INFORMATION_MESSAGE);
 
+                if (numMatches == 4) {
+                    showPatternSelectionOptions(guessedPattern -> {
+                        // Compare guessed pattern with the dealer's pattern
+                        if (guessedPattern.equals(game.getDealerPattern())) {
+                            JOptionPane.showMessageDialog(null, "Congratulations! You guessed the pattern correctly!",
+                                    "Pattern Guess", JOptionPane.INFORMATION_MESSAGE);
+
+                            // Play cheer sound
+                            // new SoundPlayer().playCheerSound();
+
+                            JFrame balloonFrame = new JFrame("Celebration!");
+                            balloonFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                            balloonFrame.setSize(500, 500);
+
+                            // Create the BalloonPanel and set its background to black
+                            BalloonPanel balloonPanel = new BalloonPanel();
+                            balloonPanel.setBackground(Color.BLACK); // Set the background of the panel to black
+                            balloonPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5)); // Neon green border
+
+                            balloonFrame.add(balloonPanel);
+
+                            // Play cheer sound with looping
+                            SoundPlayer soundPlayer = new SoundPlayer();
+                            soundPlayer.playCheerSound(); // Start playing and looping the sound
+
+                            // Add a listener to stop the sound when the window is closed
+                            balloonFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+                                @Override
+                                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                                    soundPlayer.stopCheerSound(); // Stop the sound when window closes
+                                }
+                            });
+
+                            // Show the balloon frame for the celebration
+                            balloonFrame.setVisible(true);
+
+                            // Reset the game for the next round
+                            // game.resetGame();
+
+                            // Ask the user if they want to play again or quit
+                            int playAgainResponse = JOptionPane.showConfirmDialog(null,
+                                    "The game has been reset. Do you want to play again?", "Play Again?",
+                                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+                            if (playAgainResponse == JOptionPane.YES_OPTION) {
+                                // User chose to play again, reset the game again or start a new round
+                                game.resetGame(); // Reset the game state again
+                                System.out.println("DEBUG: User chose to play again.");
+                                // TODO: Fully exit k2 game and go back to main window
+                            } else {
+                                // User chose not to play again, quit the application
+                                System.out.println("DEBUG: User chose to quit.");
+                                System.exit(0); // Quit the application
+                            }
+
+                        } else {
+                            if (attemptCount >= 3) {
+                                // They lost the game
+                                JOptionPane.showMessageDialog(null,
+                                        "Sorry! Your guess was incorrect. The pattern was: " + game.getDealerPattern(),
+                                        "Pattern Guess", JOptionPane.ERROR_MESSAGE);
+                                // TODO: Exit back to main menu of game
+                            }
+                        }
+                    });
+                }
                 // Update guess status label
                 updateGuessStatusLabel();
 
@@ -292,18 +349,64 @@ public class Grade35Window {
                             JOptionPane.showMessageDialog(null, "Congratulations! You guessed the pattern correctly!",
                                     "Pattern Guess", JOptionPane.INFORMATION_MESSAGE);
 
-                                game.resetGame();                        
+                            // Play cheer sound
+                            // new SoundPlayer().playCheerSound();
+
+                            JFrame balloonFrame = new JFrame("Celebration!");
+                            balloonFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                            balloonFrame.setSize(500, 500);
+
+                            // Create the BalloonPanel and set its background to black
+                            BalloonPanel balloonPanel = new BalloonPanel();
+                            balloonPanel.setBackground(Color.BLACK); // Set the background of the panel to black
+                            balloonPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5)); // Neon green border
+
+                            balloonFrame.add(balloonPanel);
+
+                            // Play cheer sound with looping
+                            SoundPlayer soundPlayer = new SoundPlayer();
+                            soundPlayer.playCheerSound(); // Start playing and looping the sound
+
+                            // Add a listener to stop the sound when the window is closed
+                            balloonFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+                                @Override
+                                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                                    soundPlayer.stopCheerSound(); // Stop the sound when window closes
+                                }
+                            });
+
+                            // Show the balloon frame for the celebration
+                            balloonFrame.setVisible(true);
+
+                            // Reset the game for the next round
+                            // game.resetGame();
+
+                            // Ask the user if they want to play again or quit
+                            int playAgainResponse = JOptionPane.showConfirmDialog(null,
+                                    "The game has been reset. Do you want to play again?", "Play Again?",
+                                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+                            if (playAgainResponse == JOptionPane.YES_OPTION) {
+                                // User chose to play again, reset the game again or start a new round
+                                game.resetGame(); // Reset the game state again
+                                System.out.println("DEBUG: User chose to play again.");
                             } else {
+                                // User chose not to play again, quit the application
+                                System.out.println("DEBUG: User chose to quit.");
+                                System.exit(0); // Quit the application
+                            }
+
+                        } else {
                             JOptionPane.showMessageDialog(null,
                                     "Sorry! Your guess was incorrect. The pattern was: " + game.getDealerPattern(),
                                     "Pattern Guess", JOptionPane.ERROR_MESSAGE);
+                            // TODO: Game over reset back to main menu
                         }
 
                         // Reset for the next round if the guess was correct or incorrect
                         attemptCount = 0; // Reset attempts for the next round
                         updateOutputArea(); // Clear output area
                     });
-
                 }
 
                 // // Reset selections if the guess was incorrect

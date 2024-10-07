@@ -52,8 +52,8 @@ public class GradeChooserGUI {
 
             backgroundClip = createClip();
 
-        // Play the background music with welcome.wav overlapping
-         playBackgroundMusic();
+            // Play the background music with welcome.wav overlapping
+            playBackgroundMusic();
 
             // Stop music when the window is closed
             frame.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -152,22 +152,22 @@ public class GradeChooserGUI {
             // Open an audio input stream from the provided file path
             File soundFile = new File(filepath);
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
-    
+
             // Get the audio clip and open it with the stream
             clip.open(audioStream);
 
             // Adjust the volume
             FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
             gainControl.setValue(-20.f); // Set the volume (in decibels)
-    
+
             // Start playing the clip
             clip.start();
-    
+
             // Loop the clip continuously if needed
             if (loop) {
                 clip.loop(Clip.LOOP_CONTINUOUSLY);
             }
-    
+
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
@@ -193,20 +193,20 @@ public class GradeChooserGUI {
     // Open a new window for each grade
     private static void openGradeWindow(String grade) {
         switch (grade) {
-            case "K-2":
-                new K2GradeWindow(); // Ensure this class is defined
-                break;
-            case "3-5":
-                new Grade35Window(); // Ensure this class is defined
-                break;
-            case "6-8":
-                new Grade68Window(); // Ensure this class is defined
-                break;
-            case "Instructions":
-                new InstructionsWindow(); // Ensure this class is defined
-                break;
-            default:
-                break;
+        case "K-2":
+            new K2GradeWindow(); // Ensure this class is defined
+            break;
+        case "3-5":
+            new Grade35Window(); // Ensure this class is defined
+            break;
+        case "6-8":
+            new Grade68Window(); // Ensure this class is defined
+            break;
+        case "Instructions":
+            new InstructionsWindow(); // Ensure this class is defined
+            break;
+        default:
+            break;
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.options;
 
-public class Pattern68 {
+public interface Pattern68 extends Pattern35 {
 
 	public static boolean flush(String[] cards) {
 		String suit = cards[0].split(" ")[2]; // Get the suit of the first card
@@ -29,7 +29,6 @@ public class Pattern68 {
 		return false;
 	}
 
-	
 	public static boolean twoPair(String[] cards) {
 		int[] ranks = new int[13]; // 0-12 represent A-K
 		for (String card : cards) {
@@ -81,36 +80,36 @@ public class Pattern68 {
 		return false;
 	}
 
-	private static int getRankIndex(String rank) {
+	public static int getRankIndex(String rank) {
 		switch (rank) {
-			case "2":
-				return 0;
-			case "3":
-				return 1;
-			case "4":
-				return 2;
-			case "5":
-				return 3;
-			case "6":
-				return 4;
-			case "7":
-				return 5;
-			case "8":
-				return 6;
-			case "9":
-				return 7;
-			case "10":
-				return 8;
-			case "Jack":
-				return 9;
-			case "Queen":
-				return 10;
-			case "King":
-				return 11;
-			case "Ace":
-				return 12;
-			default:
-				return -1; // Invalid rank
+		case "2":
+			return 0;
+		case "3":
+			return 1;
+		case "4":
+			return 2;
+		case "5":
+			return 3;
+		case "6":
+			return 4;
+		case "7":
+			return 5;
+		case "8":
+			return 6;
+		case "9":
+			return 7;
+		case "10":
+			return 8;
+		case "Jack":
+			return 9;
+		case "Queen":
+			return 10;
+		case "King":
+			return 11;
+		case "Ace":
+			return 12;
+		default:
+			return -1; // Invalid rank
 		}
 	}
 }
