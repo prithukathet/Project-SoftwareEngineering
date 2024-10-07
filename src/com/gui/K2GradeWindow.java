@@ -13,7 +13,6 @@ import javax.sound.sampled.Clip;
 import java.io.File;
 
 import com.artdealergame.ArtDealerGameK2;
-import com.artdealergame.ArtDealerGameK2.BooleanStringPair;
 
 // import javafx.event.ActionEvent;
 // import java.awt.event.ActionListener;
@@ -86,8 +85,7 @@ public class K2GradeWindow {
 
         // Card suits and values
         String[] suits = { "Hearts", "Diamonds", "Clubs", "Spades" };
-        String[] values = { "Ace", "King", "Queen", "Jack", "10", "9", "8", "7", "6", "5", "4",
-                "3", "2" };
+        String[] values = { "Ace", "King", "Queen", "Jack", "10", "9", "8", "7", "6", "5", "4", "3", "2" };
 
         // Icons for selected states
         checkMarkIcon = new ImageIcon(getClass().getResource("/resources/checkMarkIcon.png"));
@@ -136,9 +134,9 @@ public class K2GradeWindow {
                     }
                 });
 
-    // Add the label to the bottom panel
-    bottomPanel.add(guessStatusLabel); // Add the label to the bottom panel
-    mainPanel.add(layeredPane); // Add layered pane to the grid
+                // Add the label to the bottom panel
+                bottomPanel.add(guessStatusLabel); // Add the label to the bottom panel
+                mainPanel.add(layeredPane); // Add layered pane to the grid
             }
         }
 
@@ -264,29 +262,95 @@ public class K2GradeWindow {
 
             // Handle the user's response
             if (response == JOptionPane.YES_OPTION) {
+                // Increment the attempt count
+                attemptCount++;
+
                 // User confirmed their selection, proceed with the game logic
                 System.out.println("User confirmed their selection. Proceeding...");
 
                 // Create an instance of ArtDealerGameK2 and check matching cards
                 // ArtDealerGameK2 game = new ArtDealerGameK2();
-                BooleanStringPair result = game.checkMatchingCards(selectedCards); // Check for matching cards
-                // Show the result in a message dialog
-                JOptionPane.showMessageDialog(null, result.msg(), "Matching Cards Result",
-                        JOptionPane.INFORMATION_MESSAGE);
-
-                if (result.successful()) {
-                    // Show balloon popup
-                    ImageIcon balloonIcon = new ImageIcon(getClass().getResource("/resources/balloons.jpg"));
-                    JOptionPane.showMessageDialog(null, "Congratulations! You guessed it right!", "Correct!",
-                            JOptionPane.INFORMATION_MESSAGE, balloonIcon); 
-                            System.out.println("K2GRADEWINDOW: WON THE GAME: GAME RESET");
-                            game.resetGame(); // Reset the game for the next round 
-                    return;
-                    
+                // boolean result = game.checkMatchingCards(selectedCards); // Check for
+                // matching cards
+                int numMatches = 0;
+                StringBuilder matched = new StringBuilder();
+                matched.append("Cards Purchased by the Dealer:\n");
+                for (String card : selectedCards) {
+                    if (game.checkCardMatch(card)) {
+                        numMatches++;
+                        matched.append(card).append("\n");
+                    }
                 }
+                // Show the result in a message dialog
+                JOptionPane.showMessageDialog(null, matched, "Matching Cards Result", JOptionPane.INFORMATION_MESSAGE);
 
-                // Increment the attempt count
-                attemptCount++;
+                if (numMatches == 4) {
+                    System.out.println("K2GradeWindow: User guessed the pattern correctly.");
+                    showPatternSelectionOptions(guessedPattern -> {
+                        // Compare guessed pattern with the dealer's pattern
+                        if (guessedPattern.equals(game.getDealerPattern())) {
+                            JOptionPane.showMessageDialog(null, "Congratulations! You guessed the pattern correctly!",
+                                    "Pattern Guess", JOptionPane.INFORMATION_MESSAGE);
+
+                            // Play cheer sound
+                            // new SoundPlayer().playCheerSound();
+
+                            JFrame balloonFrame = new JFrame("Celebration!");
+                            balloonFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                            balloonFrame.setSize(500, 500);
+
+                            // Create the BalloonPanel and set its background to black
+                            BalloonPanel balloonPanel = new BalloonPanel();
+                            balloonPanel.setBackground(Color.BLACK); // Set the background of the panel to black
+                            balloonPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5)); // Neon green border
+
+                            balloonFrame.add(balloonPanel);
+
+                            // Play cheer sound with looping
+                            SoundPlayer soundPlayer = new SoundPlayer();
+                            soundPlayer.playCheerSound(); // Start playing and looping the sound
+
+                            // Add a listener to stop the sound when the window is closed
+                            balloonFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+                                @Override
+                                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                                    soundPlayer.stopCheerSound(); // Stop the sound when window closes
+                                }
+                            });
+
+                            // Show the balloon frame for the celebration
+                            balloonFrame.setVisible(true);
+
+                            // Reset the game for the next round
+                            // game.resetGame();
+
+                            // Ask the user if they want to play again or quit
+                            int playAgainResponse = JOptionPane.showConfirmDialog(null,
+                                    "The game has been reset. Do you want to play again?", "Play Again?",
+                                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+                            if (playAgainResponse == JOptionPane.YES_OPTION) {
+                                // User chose to play again, reset the game again or start a new round
+                                game.resetGame(); // Reset the game state again
+                                System.out.println("DEBUG: User chose to play again.");
+                                // TODO: Fully exit k2 game and go back to main window
+                            } else {
+                                // User chose not to play again, quit the application
+                                System.out.println("DEBUG: User chose to quit.");
+                                System.exit(0); // Quit the application
+                            }
+
+                        } else {
+                            if (attemptCount >= 3) {
+                                // They lost the game
+                                JOptionPane.showMessageDialog(null,
+                                        "Sorry! Your guess was incorrect. The pattern was: " + game.getDealerPattern(),
+                                        "Pattern Guess", JOptionPane.ERROR_MESSAGE);
+                                // TODO: Exit back to main menu of game
+                            }
+                        }
+                    });
+                }
 
                 // Update guess status label
                 updateGuessStatusLabel();
@@ -300,30 +364,30 @@ public class K2GradeWindow {
                         if (guessedPattern.equals(game.getDealerPattern())) {
                             JOptionPane.showMessageDialog(null, "Congratulations! You guessed the pattern correctly!",
                                     "Pattern Guess", JOptionPane.INFORMATION_MESSAGE);
-                        
+
                             // Play cheer sound
-                            //new SoundPlayer().playCheerSound();
-                        
+                            // new SoundPlayer().playCheerSound();
+
                             JFrame balloonFrame = new JFrame("Celebration!");
                             balloonFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                             balloonFrame.setSize(500, 500);
 
                             // Create the BalloonPanel and set its background to black
                             BalloonPanel balloonPanel = new BalloonPanel();
-                            balloonPanel.setBackground(Color.BLACK);  // Set the background of the panel to black
-                            balloonPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5));  // Neon green border
+                            balloonPanel.setBackground(Color.BLACK); // Set the background of the panel to black
+                            balloonPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5)); // Neon green border
 
                             balloonFrame.add(balloonPanel);
 
                             // Play cheer sound with looping
                             SoundPlayer soundPlayer = new SoundPlayer();
-                            soundPlayer.playCheerSound();  // Start playing and looping the sound
+                            soundPlayer.playCheerSound(); // Start playing and looping the sound
 
                             // Add a listener to stop the sound when the window is closed
                             balloonFrame.addWindowListener(new java.awt.event.WindowAdapter() {
                                 @Override
                                 public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                                    soundPlayer.stopCheerSound();  // Stop the sound when window closes
+                                    soundPlayer.stopCheerSound(); // Stop the sound when window closes
                                 }
                             });
 
@@ -331,29 +395,28 @@ public class K2GradeWindow {
                             balloonFrame.setVisible(true);
 
                             // Reset the game for the next round
-                            //game.resetGame();
+                            // game.resetGame();
 
                             // Ask the user if they want to play again or quit
-                            int playAgainResponse = JOptionPane.showConfirmDialog(null, 
-                                    "The game has been reset. Do you want to play again?", 
-                                    "Play Again?", 
-                                    JOptionPane.YES_NO_OPTION, 
-                                    JOptionPane.QUESTION_MESSAGE);
+                            int playAgainResponse = JOptionPane.showConfirmDialog(null,
+                                    "The game has been reset. Do you want to play again?", "Play Again?",
+                                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
                             if (playAgainResponse == JOptionPane.YES_OPTION) {
                                 // User chose to play again, reset the game again or start a new round
-                                game.resetGame();  // Reset the game state again
+                                game.resetGame(); // Reset the game state again
                                 System.out.println("DEBUG: User chose to play again.");
                             } else {
                                 // User chose not to play again, quit the application
                                 System.out.println("DEBUG: User chose to quit.");
-                                System.exit(0);  // Quit the application
+                                System.exit(0); // Quit the application
                             }
-                            
+
                         } else {
                             JOptionPane.showMessageDialog(null,
                                     "Sorry! Your guess was incorrect. The pattern was: " + game.getDealerPattern(),
                                     "Pattern Guess", JOptionPane.ERROR_MESSAGE);
+                            // TODO: Game over reset back to main menu
                         }
 
                         // Reset for the next round if the guess was correct or incorrect
@@ -369,7 +432,6 @@ public class K2GradeWindow {
                 // User chose "No", allow them to continue selecting/changing cards
                 System.out.println("User wants to change their selection.");
                 resetSelections(); // Reset all selections
-
             }
         }
     }
@@ -404,13 +466,14 @@ public class K2GradeWindow {
     class BalloonPanel extends JPanel {
         private ArrayList<Point> balloonPositions = new ArrayList<>();
         private Timer timer;
-    
+
         public BalloonPanel() {
             // Add starting positions for balloons
             for (int i = 0; i < 10; i++) {
-                balloonPositions.add(new Point((int)(Math.random() * 400), 400 + i * 40));  // Random horizontal positions
+                balloonPositions.add(new Point((int) (Math.random() * 400), 400 + i * 40)); // Random horizontal
+                                                                                            // positions
             }
-    
+
             // Create timer to move balloons upwards
             timer = new Timer(50, new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -418,49 +481,48 @@ public class K2GradeWindow {
                     repaint();
                 }
             });
-            timer.start();  // Start the animation
+            timer.start(); // Start the animation
         }
-    
+
         private void moveBalloons() {
             for (Point p : balloonPositions) {
-                p.y -= 5;  // Move the balloon upwards
-                if (p.y < -50) {  // Reset balloon if it moves off screen
+                p.y -= 5; // Move the balloon upwards
+                if (p.y < -50) { // Reset balloon if it moves off screen
                     p.y = 400;
                 }
             }
         }
-    
+
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             g.setColor(Color.RED);
             for (Point p : balloonPositions) {
-                g.fillOval(p.x, p.y, 30, 50);  // Draw each balloon
+                g.fillOval(p.x, p.y, 30, 50); // Draw each balloon
             }
         }
     }
-    
+
     public class SoundPlayer {
-        private Clip clip;  // Store the Clip to control it
-    
+        private Clip clip; // Store the Clip to control it
+
         public void playCheerSound() {
             try {
-                File soundFile = new File("src/resources/cheer.wav");  // Replace with your cheer sound file path
+                File soundFile = new File("src/resources/cheer.wav"); // Replace with your cheer sound file path
                 AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
                 clip = AudioSystem.getClip();
                 clip.open(audioStream);
-                clip.loop(Clip.LOOP_CONTINUOUSLY);  // Loop the sound indefinitely
+                clip.loop(Clip.LOOP_CONTINUOUSLY); // Loop the sound indefinitely
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-    
+
         public void stopCheerSound() {
             if (clip != null && clip.isRunning()) {
-                clip.stop();  // Stop the sound
+                clip.stop(); // Stop the sound
             }
         }
     }
 
 }
-
