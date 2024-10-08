@@ -4,13 +4,11 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.Arrays;
-
 import com.artdealergame.ArtDealerGameBase;
 import com.artdealergame.ArtDealerGameFactory;
 import com.artdealergame.GameType;
 
 public class ArtDealerGameGui {
-    //#region Variables and Constants
     protected static final String True = null;
     private String[] selectedCards = new String[4];
     private int selectedCount = 0; // Count of selected cards
@@ -21,9 +19,9 @@ public class ArtDealerGameGui {
     private ImageIcon checkMarkIcon; // Declare checkMarkIcon as a class member
     private ArtDealerGameBase game; // Declare game as a class member
     private JLabel guessStatusLabel; // Declare the JLabel to display guess status
-    //#endregion Variables and Constants
 
     public ArtDealerGameGui(GameType gameType) {
+
         // Initialize the game instance
         game = ArtDealerGameFactory.createGame(gameType);
         // Create the K-2 Main window frame
@@ -50,7 +48,7 @@ public class ArtDealerGameGui {
         // TODO: ensure the game is chosing the correct patterns for each gametype
         patternGuessComboBox = new JComboBox<>(game.getPatterns()); // Example initialization
 
-    //#region North Panel
+        // ----------------------North Panel------------------//
         JPanel northGamePanel = new JPanel(new BorderLayout());
         northGamePanel.setBackground(Color.BLACK); // Set background color to black
         JLabel instructionLabel = new JLabel(
@@ -74,10 +72,8 @@ public class ArtDealerGameGui {
         });
 
         K2Frame.add(northGamePanel, BorderLayout.NORTH); // Add instruction panel at the top
-    //#endregion North Panel
 
-    //#region Center Panel
-        // Main Panel with grid layout
+        // -----------------------Main Panel---------------------//
         mainPanel = new JPanel(new GridLayout(4, 13, 10, 10)); // 4 rows, 13 columns
         mainPanel.setBackground(Color.BLACK);
         mainPanel.setBorder(new LineBorder(Color.GREEN, 2)); // Set a neon green border with thickness 2
@@ -134,26 +130,37 @@ public class ArtDealerGameGui {
                 });
 
                 // Add the label to the bottom panel
-                
+
                 mainPanel.add(layeredPane); // Add layered pane to the grid
             }
         }
-        
-        K2Frame.add(mainPanel, BorderLayout.CENTER); // Add main panel in the center
-    //#endregion Center Panel
 
-    //#region Bottom Panel
-        // Initialize the guess status label
+        K2Frame.add(mainPanel, BorderLayout.CENTER); // Add main panel in the center
+
+        // ------------------Bottom Panel--------------------//
+        JPanel bottomPanel = new JPanel(new BorderLayout()); // Create a new panel for the bottom
+        bottomPanel.setBackground(Color.BLACK); // Set background color to black
+        bottomPanel.setPreferredSize(new Dimension(0, 120)); // Set height of the bottom panel to 200 pixels
+        bottomPanel.setBorder(new LineBorder(Color.GREEN, 2)); // Neon green border
+
+        // --------------------Bottom Left Panel------------------//
+        JPanel bottomLeftPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
         guessStatusLabel = new JLabel("<html>Attempts: 0<br>Remaining: 3</html>"); // Initial message
         guessStatusLabel.setForeground(Color.GREEN); // Set text color to green
         guessStatusLabel.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
 
-        JPanel bottomPanel = new JPanel(); // Panel for output messages
-        bottomPanel.setPreferredSize(new Dimension(0, 120)); // Set height of the bottom panel to 100 pixels
-        bottomPanel.setBackground(Color.BLACK);
-        bottomPanel.add(guessStatusLabel); // Add the label to the bottom panel
+        bottomLeftPanel.setPreferredSize(new Dimension(160, 120)); // Set height of the bottom panel to 100 pixels
+        bottomLeftPanel.setBackground(Color.BLACK);
+        bottomLeftPanel.setBorder(new LineBorder(Color.GREEN, 2)); // Neon green border
+        bottomLeftPanel.add(guessStatusLabel); // Add the label to the bottom panel
 
-    //#region Output Area
+        // -------------------------Bottom Center Panel-----------------------//
+        JPanel bottomCenterPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); // Panel for output messages
+        bottomCenterPanel.setPreferredSize(new Dimension(0, 120)); // Set height of the bottom panel to 100 pixels
+        bottomCenterPanel.setBackground(Color.BLACK);
+        bottomCenterPanel.setBorder(new LineBorder(Color.GREEN, 2)); // Neon green border
+
         outputArea = new JTextArea(3, 55); // Create outputArea
         outputArea.setEditable(false); // Make it non-editable
         outputArea.setBackground(Color.BLACK); // Set background color black
@@ -161,21 +168,33 @@ public class ArtDealerGameGui {
         outputArea.setFont(new Font("Comic Sans", Font.PLAIN, 14)); // Set font preference
         outputArea.setBorder(BorderFactory.createLineBorder(Color.GREEN, 2)); // Neon green border
         outputArea.setLineWrap(true); // Enable line to wrap
-        bottomPanel.add(outputArea); // Add output area to bottom panel
-        //#endregion Output Area    
-    
+        bottomCenterPanel.add(outputArea); // Add output area to bottom panel
+
+        // ---------------------Bottom Right Panel--------------------//
+        JPanel bottomRightPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        bottomRightPanel.setBackground(Color.BLACK);
+        bottomRightPanel.setBorder(new LineBorder(Color.GREEN, 2)); // Neon green border
+        bottomRightPanel.setPreferredSize(new Dimension(160, 120)); // Set height of the bottom panel to 100 pixels
+        JLabel testLabel = new JLabel("Test Label");
+        bottomRightPanel.add(testLabel);
+
         K2Frame.add(bottomPanel, BorderLayout.SOUTH); // Add bottom panel at the bottom
-    //#endregion Bottom Panel
+        bottomPanel.add(bottomLeftPanel, BorderLayout.WEST); // Add bottomLeftPanel to the left (WEST)
+        bottomPanel.add(bottomCenterPanel, BorderLayout.CENTER); // Add bottom panel at the bottom
+        bottomPanel.add(bottomRightPanel, BorderLayout.EAST); // Add bottom panel at the bottom
 
         // Makes the frame visible
         K2Frame.setVisible(true); // Make the K-2 window visible
     }
 
     // Method to resize the image
+
     private Image resizeImage(Image originalImage, int targetWidth, int targetHeight) {
         Image resizedImage = originalImage.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
         return resizedImage;
     }
+
+    // TODO: Can i add this to the artdealergamebase?
 
     private void updateGuessStatusLabel() {
         int remainingAttempts = 3 - attemptCount; // Assuming maximum attempts are 3
@@ -185,6 +204,8 @@ public class ArtDealerGameGui {
     }
 
     // Handle card selection
+    // TODO: Fix the list error where it removes the last card selected
+
     private void handleCardSelection(JLayeredPane layeredPane, JLabel checkMarkLabel, String value, String suit) {
         if (checkMarkLabel.isVisible()) {
             // Deselecting the card
@@ -218,6 +239,9 @@ public class ArtDealerGameGui {
     }
 
     // Method to update the output area with selected cards
+    // TODO: Can i put this output area in ArtDealerGameBase? Call it from there.
+    // issue is selected cards is ran here as well
+
     private void updateOutputArea() {
         StringBuilder output = new StringBuilder("Selected Cards:\n");
         for (String card : selectedCards) {
@@ -234,6 +258,8 @@ public class ArtDealerGameGui {
     }
 
     // Method to reset all selections and remove checkmarks
+    // TODO: Can I put this in ArtDealerGameBase? Call it from there?
+
     private void resetSelections() {
         selectedCount = 0; // Reset selected count
         Arrays.fill(selectedCards, null); // Clear selected cards
@@ -257,6 +283,8 @@ public class ArtDealerGameGui {
     }
 
     // Method to check if 4 cards are selected and confirm with the user
+    // TODO: This is a mess!
+
     private void checkSelectedCards() {
         if (selectedCount == 4) {
             // Build a message to display the selected cards
@@ -276,10 +304,8 @@ public class ArtDealerGameGui {
                 // Increment the attempt count
                 attemptCount++;
 
-                // User confirmed their selection, proceed with the game logic
-                System.out.println("User confirmed their selection. Proceeding...");
-
                 // Create an instance of ArtDealerGame35 and check matching cards
+                // TODO: Can I make this a method in ArtDealerGameBase? Call it from there?
                 int numMatches = 0;
                 StringBuilder matched = new StringBuilder();
                 matched.append("Cards Purchased by the Dealer:\n");
@@ -290,7 +316,7 @@ public class ArtDealerGameGui {
                     }
                 }
 
-                // Show the result in a message dialog
+                // Show the cards the art dealer has purchased
                 JOptionPane.showMessageDialog(null, matched, "Matching Cards Result", JOptionPane.INFORMATION_MESSAGE);
 
                 if (numMatches == 4) {
@@ -300,6 +326,8 @@ public class ArtDealerGameGui {
                             JOptionPane.showMessageDialog(null, "Congratulations! You guessed the pattern correctly!",
                                     "Pattern Guess", JOptionPane.INFORMATION_MESSAGE);
 
+                            // TODO: How do i call the Balloon Panel Window instead of having this multiple
+                            // times?
                             JFrame balloonFrame = new JFrame("Celebration!");
                             balloonFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                             balloonFrame.setSize(500, 500);
@@ -310,7 +338,7 @@ public class ArtDealerGameGui {
                             balloonPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5)); // Neon green border
 
                             balloonFrame.add(balloonPanel);
-
+                            // TODO: How do i call the cheer sound under soundplayer.java
                             // Play cheer sound with looping
                             SoundPlayer soundPlayer = new SoundPlayer();
                             soundPlayer.playCheerSound(); // Start playing and looping the sound
@@ -350,7 +378,6 @@ public class ArtDealerGameGui {
                                 System.out.println("DEBUG: User chose to quit.");
                                 System.exit(0); // Quit the application
                             }
-
                         } else {
                             if (attemptCount >= 3) {
                                 // They lost the game
@@ -378,10 +405,10 @@ public class ArtDealerGameGui {
                                     return;
                                 }
                             }
+
                         }
                     });
                 }
-
                 // Update guess status label
                 updateGuessStatusLabel();
 
@@ -396,7 +423,7 @@ public class ArtDealerGameGui {
 
                             // Play cheer sound
                             // new SoundPlayer().playCheerSound();
-
+                            // TODO: Show balloonFrame instead of repeating this code, how to?
                             JFrame balloonFrame = new JFrame("Celebration!");
                             balloonFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                             balloonFrame.setSize(500, 500);
@@ -407,7 +434,7 @@ public class ArtDealerGameGui {
                             balloonPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5)); // Neon green border
 
                             balloonFrame.add(balloonPanel);
-
+                            // TODO: Play sound instead of repeating this code, how to?
                             // Play cheer sound with looping
                             SoundPlayer soundPlayer = new SoundPlayer();
                             soundPlayer.playCheerSound(); // Start playing and looping the sound
@@ -423,7 +450,7 @@ public class ArtDealerGameGui {
 
                             // Show the balloon frame for the celebration
                             balloonFrame.setVisible(true);
-
+                            // TODO: This is repeated code, how can i call from gradechoosebase?
                             // Ask the user if they want to play again or quit
                             int playAgainResponse = JOptionPane.showConfirmDialog(null,
                                     "The game has been reset. Do you want to play again?", "Play Again?",
@@ -467,6 +494,9 @@ public class ArtDealerGameGui {
             }
         }
     }
+
+    // Method to show pattern selection options upon wanting to guess
+    // TODO: Can i put this in ArtDealerGameBase? Call it from there?
 
     public void showPatternSelectionOptions(java.util.function.Consumer<String> callback) {
         // Step 1: Create a new JFrame (the window)

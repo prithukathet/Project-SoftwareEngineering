@@ -5,6 +5,7 @@ import java.util.Random;
 public abstract class ArtDealerGameBase {
     protected String dealerPattern;
     protected String[] patterns;
+    protected javax.swing.JLabel guessStatusLabel; // Add this line
 
     public ArtDealerGameBase(String[] patterns) {
         this.patterns = patterns;
@@ -35,5 +36,5 @@ public abstract class ArtDealerGameBase {
 
     public String[] getPatterns() {
         return patterns;
-    }
+    } 
 }
