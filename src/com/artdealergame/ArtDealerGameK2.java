@@ -11,7 +11,6 @@ public class ArtDealerGameK2 extends ArtDealerGameBase {
     }
 
     // Method to check if a single card is being purchased by the dealer
-    // add all patterns from K-2
     @Override
     public boolean isDealerBuying(String card) {
         switch (getDealerPattern()) {
@@ -54,8 +53,6 @@ public class ArtDealerGameK2 extends ArtDealerGameBase {
         case "All Spades":
             return PatternBase.allSpades(card);
         default:
-            // System.out.println("GameK2 Window : Unknown dealer pattern: " +
-            // dealerPattern);
             return false;
         }
     }

@@ -1,7 +1,5 @@
 package com.artdealergame;
 
-
-
 public class ArtDealerGameFactory {
 
     public static ArtDealerGameBase createGame(GameType gameType) {

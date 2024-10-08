@@ -1,6 +1,8 @@
 package com.options;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public interface Pattern35 extends PatternBase {
@@ -31,51 +33,36 @@ public interface Pattern35 extends PatternBase {
         return hasAce && hasBlackjack;
     }
 
-    public static boolean sumToNine(String[] cards) {
-        int sum = 0;
-        for (String card : cards) {
-            String rank = card.split(" ")[0]; // Get the rank (e.g., "2", "Queen", etc.)
-            switch (rank) {
-            case "2":
-                sum += 2;
-                break;
-            case "3":
-                sum += 3;
-                break;
-            case "4":
-                sum += 4;
-                break;
-            case "5":
-                sum += 5;
-                break;
-            case "6":
-                sum += 6;
-                break;
-            case "7":
-                sum += 7;
-                break;
-            case "8":
-                sum += 8;
-                break;
-            case "9":
-                sum += 9;
-                break;
-            case "10":
-                sum += 10;
-                break;
-            case "Jack":
-                sum += 11;
-                break; // You can adjust values as per your game's rules
-            case "Queen":
-                sum += 12;
-                break;
-            case "King":
-                sum += 13;
-                break;
-            default:
-                break;
+    public static List<String> findCombinationsToNine(String[] cards) {
+            HashMap<String, Integer> cardValues = new HashMap<>();
+            // Define card values
+            cardValues.put("Ace", 1);
+            cardValues.put("Two", 2);
+            cardValues.put("Three", 3);
+            cardValues.put("Four", 4);
+            cardValues.put("Five", 5);
+            cardValues.put("Six", 6);
+            cardValues.put("Seven", 7);
+            cardValues.put("Eight", 8);
+            cardValues.put("Nine", 9);
+            cardValues.put("Ten", 10);
+            cardValues.put("Jack", 11);
+            cardValues.put("Queen", 12);
+            cardValues.put("King", 13);
+
+            List<String> combinations = new ArrayList<>();
+            
+            // Check all pairs of cards
+            for (int i = 0; i < cards.length; i++) {
+                for (int j = i + 1; j < cards.length; j++) {
+                    int value1 = cardValues.get(cards[i].split(" ")[0]);
+                    int value2 = cardValues.get(cards[j].split(" ")[0]);
+                    
+                    if (value1 + value2 == 9) {
+                        combinations.add(cards[i] + " and " + cards[j]);
+                    }
+                }
             }
+            return combinations;
         }
-        return sum == 9;
-    }
 }

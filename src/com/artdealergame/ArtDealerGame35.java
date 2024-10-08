@@ -58,7 +58,7 @@ public class ArtDealerGame35 extends ArtDealerGameBase {
         case "All Single-Digit Primes":
             return Pattern35.allSingleDigitPrimes(new String[] { card });
         case "Sum to 9":
-            return Pattern35.sumToNine(new String[] { card });
+            return !Pattern35.findCombinationsToNine(new String[] { card }).isEmpty();
         case "Ace and Black Jack":
             return Pattern35.checkAceAndBlackjack(new String[] { card });
         default:
