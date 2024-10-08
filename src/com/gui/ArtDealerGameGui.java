@@ -10,8 +10,8 @@ import com.artdealergame.ArtDealerGameFactory;
 import com.artdealergame.GameType;
 
 public class ArtDealerGameGui {
+    //#region Variables and Constants
     protected static final String True = null;
-    // Array to store selected cards
     private String[] selectedCards = new String[4];
     private int selectedCount = 0; // Count of selected cards
     private JTextArea outputArea; // Declare outputArea as a class member
@@ -21,6 +21,7 @@ public class ArtDealerGameGui {
     private ImageIcon checkMarkIcon; // Declare checkMarkIcon as a class member
     private ArtDealerGameBase game; // Declare game as a class member
     private JLabel guessStatusLabel; // Declare the JLabel to display guess status
+    //#endregion Variables and Constants
 
     public ArtDealerGameGui(GameType gameType) {
         // Initialize the game instance
@@ -49,44 +50,37 @@ public class ArtDealerGameGui {
         // TODO: ensure the game is chosing the correct patterns for each gametype
         patternGuessComboBox = new JComboBox<>(game.getPatterns()); // Example initialization
 
-        // Instruction Panel North
-        JPanel instructionPanel = new JPanel(new BorderLayout());
-        instructionPanel.setBackground(Color.BLACK); // Set background color to black
+    //#region North Panel
+        JPanel northGamePanel = new JPanel(new BorderLayout());
+        northGamePanel.setBackground(Color.BLACK); // Set background color to black
         JLabel instructionLabel = new JLabel(
                 "Art Dealer wants you to choose 4 paintings below to guess the pattern he is buying");
         instructionLabel.setForeground(Color.GREEN); // Set text color to green
         instructionLabel.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
-        instructionPanel.add(instructionLabel); // Add label to instruction panel
+        northGamePanel.add(instructionLabel); // Add label to instruction panel
 
         // Create the button
-        JButton chooseLevelButton = new JButton("Choose a Different Level");
-        chooseLevelButton.setBackground(Color.BLACK); // Set background color to black
-        chooseLevelButton.setForeground(Color.GREEN); // Set text color to green
-        chooseLevelButton.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
-        chooseLevelButton.setFocusable(false);
-
-        // Initialize the guess status label
-        guessStatusLabel = new JLabel("<html>Attempts: 0<br>Remaining: 3</html>"); // Initial message
-        guessStatusLabel.setForeground(Color.GREEN); // Set text color to green
-        guessStatusLabel.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
+        JButton northChooseButton = new JButton("Choose a Different Level");
+        northChooseButton.setBackground(Color.BLACK); // Set background color to black
+        northChooseButton.setForeground(Color.GREEN); // Set text color to green
+        northChooseButton.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
+        northChooseButton.setFocusable(false);
 
         // Add the button to the instruction panel (far right) with event listener
-        instructionPanel.add(chooseLevelButton, BorderLayout.EAST);
-        chooseLevelButton.addActionListener(e -> {
+        northGamePanel.add(northChooseButton, BorderLayout.EAST);
+        northChooseButton.addActionListener(e -> {
             K2Frame.dispose(); // Close this window
             GradeChooserGUI.main(new String[0]); // Re-open the GradeChooserGUI
         });
 
+        K2Frame.add(northGamePanel, BorderLayout.NORTH); // Add instruction panel at the top
+    //#endregion North Panel
+
+    //#region Center Panel
         // Main Panel with grid layout
         mainPanel = new JPanel(new GridLayout(4, 13, 10, 10)); // 4 rows, 13 columns
         mainPanel.setBackground(Color.BLACK);
         mainPanel.setBorder(new LineBorder(Color.GREEN, 2)); // Set a neon green border with thickness 2
-
-        // Bottom Panel
-        JPanel bottomPanel = new JPanel(); // Panel for output messages
-        bottomPanel.setPreferredSize(new Dimension(0, 120)); // Set height of the bottom panel to 100 pixels
-        bottomPanel.setBackground(Color.BLACK);
-        bottomPanel.add(guessStatusLabel); // Add the label to the bottom panel
 
         // Card suits and values
         String[] suits = { "Hearts", "Diamonds", "Clubs", "Spades" };
@@ -140,12 +134,26 @@ public class ArtDealerGameGui {
                 });
 
                 // Add the label to the bottom panel
-                bottomPanel.add(guessStatusLabel); // Add the label to the bottom panel
+                
                 mainPanel.add(layeredPane); // Add layered pane to the grid
             }
         }
+        
+        K2Frame.add(mainPanel, BorderLayout.CENTER); // Add main panel in the center
+    //#endregion Center Panel
 
-        // Create a JTextArea for output messages
+    //#region Bottom Panel
+        // Initialize the guess status label
+        guessStatusLabel = new JLabel("<html>Attempts: 0<br>Remaining: 3</html>"); // Initial message
+        guessStatusLabel.setForeground(Color.GREEN); // Set text color to green
+        guessStatusLabel.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
+
+        JPanel bottomPanel = new JPanel(); // Panel for output messages
+        bottomPanel.setPreferredSize(new Dimension(0, 120)); // Set height of the bottom panel to 100 pixels
+        bottomPanel.setBackground(Color.BLACK);
+        bottomPanel.add(guessStatusLabel); // Add the label to the bottom panel
+
+    //#region Output Area
         outputArea = new JTextArea(3, 55); // Create outputArea
         outputArea.setEditable(false); // Make it non-editable
         outputArea.setBackground(Color.BLACK); // Set background color black
@@ -153,14 +161,11 @@ public class ArtDealerGameGui {
         outputArea.setFont(new Font("Comic Sans", Font.PLAIN, 14)); // Set font preference
         outputArea.setBorder(BorderFactory.createLineBorder(Color.GREEN, 2)); // Neon green border
         outputArea.setLineWrap(true); // Enable line to wrap
-
-        // Add the JTextArea to the bottom panel
         bottomPanel.add(outputArea); // Add output area to bottom panel
-
-        // Add panels to the frame
-        K2Frame.add(instructionPanel, BorderLayout.NORTH); // Add instruction panel at the top
-        K2Frame.add(mainPanel, BorderLayout.CENTER); // Add main panel in the center
+        //#endregion Output Area    
+    
         K2Frame.add(bottomPanel, BorderLayout.SOUTH); // Add bottom panel at the bottom
+    //#endregion Bottom Panel
 
         // Makes the frame visible
         K2Frame.setVisible(true); // Make the K-2 window visible
