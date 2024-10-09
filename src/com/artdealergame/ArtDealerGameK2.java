@@ -12,7 +12,7 @@ public class ArtDealerGameK2 extends ArtDealerGameBase {
 
     // Method to check if a single card is being purchased by the dealer
     @Override
-    public boolean isDealerBuying(String card) {
+    public boolean isDealerBuying(Card card) {
         switch (getDealerPattern()) {
         case "All Red":
             return PatternBase.allRed(card);

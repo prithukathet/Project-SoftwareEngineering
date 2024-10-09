@@ -16,7 +16,7 @@ public class ArtDealerGame68 extends ArtDealerGameBase {
     // Method to check if a single card is being purchased by the dealer
     // add all patterns from K-2 and 3-5
     @Override
-    public boolean isDealerBuying(String card) {
+    public boolean isDealerBuying(Card card) {
         switch (getDealerPattern()) {
         case "All Red":
             return PatternBase.allRed(card);
@@ -57,19 +57,31 @@ public class ArtDealerGame68 extends ArtDealerGameBase {
         case "All Spades":
             return PatternBase.allSpades(card);
         case "All Single-Digit Primes":
-            return Pattern35.allSingleDigitPrimes(new String[] { card });
+            return Pattern35.allSingleDigitPrimes(card);
         case "Sum to 9":
-            return !Pattern35.findCombinationsToNine(new String[] { card }).isEmpty();
+            // TODO: How to handle this case?
+            return false;
+        // return !Pattern35.findCombinationsToNine(new String[] { card }).isEmpty();
         case "Ace and Black Jack":
-            return Pattern35.checkAceAndBlackjack(new String[] { card });
+            // TODO: How to handle this case?
+            return false;
+        // return Pattern35.checkAceAndBlackjack(new String[] { card });
         case "One Pair":
-            return Pattern68.onePair(new String[] { card });
+            // TODO: How to handle this case?
+            return false;
+        // return Pattern68.onePair(new String[] { card });
         case "Two Pairs":
-            return Pattern68.twoPair(new String[] { card });
+            // TODO: How to handle this case?
+            return false;
+        // return Pattern68.twoPair(new String[] { card });
         case "Three of a Kind":
-            return Pattern68.threePair(new String[] { card });
+            // TODO: How to handle this case?
+            return false;
+        // return Pattern68.threePair(new String[] { card });
         case "Four of a Kind":
-            return Pattern68.fourPair(new String[] { card });
+            // TODO: How to handle this case?
+            return false;
+        // return Pattern68.fourPair(new String[] { card });
         default:
             System.out.println("Game35 Window : Unknown dealer pattern: " + dealerPattern);
             return false;

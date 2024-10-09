@@ -1,91 +1,85 @@
 package com.options;
 
+import com.artdealergame.CardSuit;
+import com.artdealergame.Card;
+import com.artdealergame.CardValue;
+
 public interface PatternBase {
 
-    // Check if all cards match a given type (suit or rank)
-    public static boolean allCardsOfType(String[] cards, String type) {
-        for (String card : cards) {
-            if (!card.contains(type)) {
-                return false; // Found a card that does not match the specified type
-            }
-        }
-        return true; // All cards match the specified type
-    }
-
     // Specific methods to check all types
-    public static boolean allRed(String card) {
-        return card.contains("Hearts") || card.contains("Diamonds");
+    public static boolean allRed(Card card) {
+        return card.getSuit() == CardSuit.HEARTS || card.getSuit() == CardSuit.DIAMONDS;
     }
 
-    public static boolean allBlack(String card) {
-        return card.contains("Clubs") || card.contains("Spades");
+    public static boolean allBlack(Card card) {
+        return card.getSuit() == CardSuit.SPADES || card.getSuit() == CardSuit.CLUBS;
     }
 
-    public static boolean allAces(String card) {
-        return card.contains("Ace");
+    public static boolean allAces(Card card) {
+        return card.getValue() == CardValue.ACE;
     }
 
-    public static boolean allKings(String card) {
-        return card.contains("King");
+    public static boolean allKings(Card card) {
+        return card.getValue() == CardValue.KING;
     }
 
-    public static boolean allQueens(String card) {
-        return card.contains("Queen");
+    public static boolean allQueens(Card card) {
+        return card.getValue() == CardValue.QUEEN;
     }
 
-    public static boolean allJacks(String card) {
-        return card.contains("Jack");
+    public static boolean allJacks(Card card) {
+        return card.getValue() == CardValue.JACK;
     }
 
-    public static boolean allTens(String card) {
-        return card.contains("Ten") || card.contains("10");
+    public static boolean allTens(Card card) {
+        return card.getValue() == CardValue.TEN;
     }
 
-    public static boolean allNines(String card) {
-        return card.contains("Nine") || card.contains("9");
+    public static boolean allNines(Card card) {
+        return card.getValue() == CardValue.NINE;
     }
 
-    public static boolean allEights(String card) {
-        return card.contains("Eight") || card.contains("8");
+    public static boolean allEights(Card card) {
+        return card.getValue() == CardValue.EIGHT;
     }
 
-    public static boolean allSevens(String card) {
-        return card.contains("Seven") || card.contains("7");
+    public static boolean allSevens(Card card) {
+        return card.getValue() == CardValue.SEVEN;
     }
 
-    public static boolean allSixes(String card) {
-        return card.contains("Six") || card.contains("6");
+    public static boolean allSixes(Card card) {
+        return card.getValue() == CardValue.SIX;
     }
 
-    public static boolean allFives(String card) {
-        return card.contains("Five") || card.contains("5");
+    public static boolean allFives(Card card) {
+        return card.getValue() == CardValue.FIVE;
     }
 
-    public static boolean allFours(String card) {
-        return card.contains("Four") || card.contains("4");
+    public static boolean allFours(Card card) {
+        return card.getValue() == CardValue.FOUR;
     }
 
-    public static boolean allThrees(String card) {
-        return card.contains("Three") || card.contains("3");
+    public static boolean allThrees(Card card) {
+        return card.getValue() == CardValue.THREE;
     }
 
-    public static boolean allTwos(String card) {
-        return card.contains("Two") || card.contains("2");
+    public static boolean allTwos(Card card) {
+        return card.getValue() == CardValue.TWO;
     }
 
-    public static boolean allHearts(String card) {
-        return card.contains("Hearts");
+    public static boolean allHearts(Card card) {
+        return card.getSuit() == CardSuit.HEARTS;
     }
 
-    public static boolean allDiamonds(String card) {
-        return card.contains("Diamonds");
+    public static boolean allDiamonds(Card card) {
+        return card.getSuit() == CardSuit.DIAMONDS;
     }
 
-    public static boolean allSpades(String card) {
-        return card.contains("Spades");
+    public static boolean allSpades(Card card) {
+        return card.getSuit() == CardSuit.SPADES;
     }
 
-    public static boolean allClubs(String card) {
-        return card.contains("Clubs");
+    public static boolean allClubs(Card card) {
+        return card.getSuit() == CardSuit.CLUBS;
     }
 }
