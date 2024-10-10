@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import com.artdealergame.ArtDealerGameBase;
 import com.artdealergame.ArtDealerGameFactory;
 import com.artdealergame.AttemptObserver;
@@ -15,16 +14,19 @@ import com.artdealergame.Constants;
 
 public class ArtDealerGameGui {
     // protected static final String True = null;
-    private String[] selectedCards = new String[4];
     private JTextArea outputArea; // Declare outputArea as a class member
-    private int attemptCount = 0; // Count of attempts made by the user
+    // private JFrame balloonFrame; // Declare balloonFrame as a class member
     private JComboBox<String> patternGuessComboBox; // Add this declaration
     private JPanel mainPanel; // Declare mainPanel as a class member
     private ImageIcon checkMarkIcon; // Declare checkMarkIcon as a class member
     private ArtDealerGameBase game; // Declare game as a class member
     private JLabel guessStatusLabel; // Declare the JLabel to display guess status
+    private SoundPlayer soundPlayer; // Declare the SoundPlayer as a class member
+    private JFrame balloonFrame; // Declare the JFrame as a class member
 
     public ArtDealerGameGui(GameType gameType) {
+
+        soundPlayer = new SoundPlayer(); // Initialize the SoundPlayer
 
         // Initialize the game instance
         game = ArtDealerGameFactory.createGame(gameType);
@@ -49,7 +51,6 @@ public class ArtDealerGameGui {
         ImageIcon image = new ImageIcon(getClass().getResource("/resources/artdealer.jpg"));
         K2Frame.setIconImage(image.getImage());
 
-        // TODO: ensure the game is chosing the correct patterns for each gametype
         patternGuessComboBox = new JComboBox<>(game.getPatterns()); // Example initialization
 
         // ----------------------North Panel------------------//
@@ -128,16 +129,14 @@ public class ArtDealerGameGui {
         // ------------------Bottom Panel--------------------//
         JPanel bottomPanel = new JPanel(new BorderLayout()); // Create a new panel for the bottom
         bottomPanel.setBackground(Color.BLACK); // Set background color to black
-        bottomPanel.setPreferredSize(new Dimension(0, 120)); // Set height of the bottom panel to 200 pixels
+        bottomPanel.setPreferredSize(new Dimension(0, 80)); // Set height of the bottom panel to 200 pixels
         bottomPanel.setBorder(new LineBorder(Color.GREEN, 2)); // Neon green border
 
         // --------------------Bottom Left Panel------------------//
         JPanel bottomLeftPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-
-        guessStatusLabel = new JLabel("<html>Attempts: 0<br>Remaining: 3</html>"); // Initial message
+        guessStatusLabel = new JLabel("<html><b>Attempts:</b> 0<br>Remaining: 3</html>"); // Initial message
         guessStatusLabel.setForeground(Color.GREEN); // Set text color to green
         guessStatusLabel.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
-
         bottomLeftPanel.setPreferredSize(new Dimension(160, 120)); // Set height of the bottom panel to 100 pixels
         bottomLeftPanel.setBackground(Color.BLACK);
         bottomLeftPanel.setBorder(new LineBorder(Color.GREEN, 2)); // Neon green border
@@ -171,9 +170,15 @@ public class ArtDealerGameGui {
         bottomRightPanel.setBackground(Color.BLACK);
         bottomRightPanel.setBorder(new LineBorder(Color.GREEN, 2)); // Neon green border
         bottomRightPanel.setPreferredSize(new Dimension(160, 120)); // Set height of the bottom panel to 100 pixels
-        JLabel testLabel = new JLabel("Test Label");
-        bottomRightPanel.add(testLabel);
-
+        JLabel patternOptionsLabel = new JLabel("Patterns Available:");
+        patternOptionsLabel.setForeground(Color.GREEN); // Set text color to green
+        bottomRightPanel.add(patternOptionsLabel);
+        bottomRightPanel.add(patternGuessComboBox); // Add the comboBox to the panel
+        patternGuessComboBox.setBackground(Color.BLACK); // Set background color to black
+        patternGuessComboBox.setForeground(Color.GREEN); // Set text color to white
+        patternGuessComboBox.setBorder(new LineBorder(Color.GREEN, 2)); // Set neon green border
+        patternGuessComboBox.setFocusable(false);
+        
         K2Frame.add(bottomPanel, BorderLayout.SOUTH); // Add bottom panel at the bottom
         bottomPanel.add(bottomLeftPanel, BorderLayout.WEST); // Add bottomLeftPanel to the left (WEST)
         bottomPanel.add(bottomCenterPanel, BorderLayout.CENTER); // Add bottom panel at the bottom
@@ -183,8 +188,16 @@ public class ArtDealerGameGui {
         K2Frame.setVisible(true); // Make the K-2 window visible
     }
 
-    // Handle card selection
+    public void stopCheerSound() {
+        soundPlayer.stopCheerSound(); // Call stopCheerSound on the soundPlayer instance
+    }
 
+    // Method to play the cheer sound if needed
+    public void playCheerSound() {
+        soundPlayer.playCheerSound(); // Call playCheerSound on the soundPlayer instance
+    }
+
+    // Handle card selection
     private void handleCardSelection(JLayeredPane layeredPane, JLabel checkMarkLabel, Card card) {
         if (!game.cardSelected(card)) {
             JOptionPane.showMessageDialog(null, "You can only select 4 cards!"); // Error
@@ -195,10 +208,7 @@ public class ArtDealerGameGui {
 
             StringBuilder selectedMessage = new StringBuilder("Are you sure these are the four cards?\n");
             for (Card selected : game.getSelectedCards()) {
-                // TODO: In Card.java, add a method to get the name of the card
-                // instead of having to call getValue().name().toLowerCase() each time
-                // TODO: Print the rest of the card details
-                selectedMessage.append(selected.getValue().name().toLowerCase()).append("\n");
+                selectedMessage.append(selected.getFullCardName()).append("\n");
             }
 
             // Display a confirmation dialog asking if the user is sure
@@ -211,293 +221,75 @@ public class ArtDealerGameGui {
                 StringBuilder purchasedString = new StringBuilder();
                 purchasedString.append("Cards Purchased by the Dealer:\n");
                 for (Card purchased : purchasedCards) {
-                    // TODO: In Card.java, add a method to get the name of the card
-                    // instead of having to call getValue().name().toLowerCase() each time
-                    // TODO: Print the rest of the card details
-                    purchasedString.append(purchased.getValue().name().toLowerCase()).append("\n");
+                    purchasedString.append(purchased.getFullCardName()).append("\n");
                 }
 
                 // Show the cards the art dealer has purchased
                 JOptionPane.showMessageDialog(null, purchasedString, "Matching Cards Result",
                         JOptionPane.INFORMATION_MESSAGE);
+
+                registerPatternSelectionCallback();
+            } else {
+                game.clearSelectedCards();
             }
         }
-
-        // if (selectedCount == 4) {
-        // checkSelectedCards(); // Check if the maximum number of cards is selected
-        // }
     }
 
-    // Method to update the output area with selected cards
-    // TODO: Can i put this output area in ArtDealerGameBase? Call it from there.
+    public void showBalloonFrame() {
+        JFrame balloonFrame = new JFrame("Celebration!");
+        balloonFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        balloonFrame.setSize(500, 500);
 
-    private void updateOutputArea() {
-        StringBuilder output = new StringBuilder("Selected Cards:\n");
-        for (String card : selectedCards) {
-            if (card != null) {
-                output.append(card).append(", ");
+        BalloonPanel balloonPanel = new BalloonPanel();
+        balloonPanel.setBackground(Color.BLACK);
+        balloonPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5));
+
+        balloonFrame.add(balloonPanel);
+        balloonFrame.setLocationRelativeTo(null);
+        balloonFrame.setVisible(true);
+    }
+
+    public void askPlayAgain(ArtDealerGameBase game) {
+        int playAgainResponse = JOptionPane.showConfirmDialog(null,
+                "The game has been reset. Do you want to play again?", "Play Again?", JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
+
+        if (playAgainResponse == JOptionPane.YES_OPTION) {
+            // TODO: Get this Yes option to close the balloon and reset selection
+            stopCheerSound();
+            if (balloonFrame != null) {
+                balloonFrame.dispose(); // Close the balloonFrame
             }
+            System.out.println("DEBUG: User chose to play again.");
+            game.resetGame();
+
+        } else {
+            System.out.println("DEBUG: User chose to quit.");
+            System.exit(0);
         }
-
-        // Remove the last comma and space if there are any selected cards
-        // if (selectedCount > 0) {
-        // output.setLength(output.length() - 2);
-        // }
-        outputArea.setText(output.toString()); // Update the output area
-    }
-
-    // Method to reset all selections and remove checkmarks
-    // TODO: Can I put this in ArtDealerGameBase? Call it from there?
-
-    private void resetSelections() {
-        Arrays.fill(selectedCards, null); // Clear selected cards
-
-        // Loop through all components in the main panel to hide checkmarks
-        for (Component component : mainPanel.getComponents()) {
-            if (component instanceof JLayeredPane) {
-                JLayeredPane layeredPane = (JLayeredPane) component;
-                for (Component layer : layeredPane.getComponents()) {
-                    if (layer instanceof JLabel) {
-                        JLabel label = (JLabel) layer;
-                        // Check if it is the checkmark label and hide it
-                        if (label.getIcon() == checkMarkIcon) {
-                            label.setVisible(false); // Hide checkmark
-                        }
-                    }
-                }
-            }
-        }
-        updateOutputArea(); // Clear output area
-    }
-
-    // Method to check if 4 cards are selected and confirm with the user
-    // TODO: This is a mess!
-
-    private void checkSelectedCards() {
-        // // if (selectedCount == 4) {
-
-        // // Create an instance of ArtDealerGame35 and check matching cards
-        // // TODO: Can I make this a method in ArtDealerGameBase? Call it from there?
-        // int numMatches = 0;
-        // StringBuilder matched = new StringBuilder();
-        // matched.append("Cards Purchased by the Dealer:\n");
-        // for (String card : selectedCards) {
-        // if (game.matchedCards(card)) {
-        // numMatches++;
-        // matched.append(card).append("\n");
-        // }
-        // }
-
-        // // Show the cards the art dealer has purchased
-        // JOptionPane.showMessageDialog(null, matched, "Matching Cards Result",
-        // JOptionPane.INFORMATION_MESSAGE);
-
-        // if (numMatches == 4) {
-        // showPatternSelectionOptions(guessedPattern -> {
-        // // Compare guessed pattern with the dealer's pattern
-        // if (guessedPattern.equals(game.getDealerPattern())) {
-        // JOptionPane.showMessageDialog(null, "Congratulations! You guessed the pattern
-        // correctly!",
-        // "Pattern Guess", JOptionPane.INFORMATION_MESSAGE);
-
-        // // TODO: How do i call the Balloon Panel Window instead of having this
-        // multiple
-        // // times?
-        // JFrame balloonFrame = new JFrame("Celebration!");
-        // balloonFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        // balloonFrame.setSize(500, 500);
-
-        // // Create the BalloonPanel and set its background to black
-        // BalloonPanel balloonPanel = new BalloonPanel();
-        // balloonPanel.setBackground(Color.BLACK); // Set the background of the panel
-        // to black
-        // balloonPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5)); //
-        // Neon green border
-
-        // balloonFrame.add(balloonPanel);
-        // // TODO: How do i call the cheer sound under soundplayer.java
-        // // Play cheer sound with looping
-        // SoundPlayer soundPlayer = new SoundPlayer();
-        // soundPlayer.playCheerSound(); // Start playing and looping the sound
-
-        // // Add a listener to stop the sound when the window is closed
-        // balloonFrame.addWindowListener(new java.awt.event.WindowAdapter() {
-        // @Override
-        // public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-        // soundPlayer.stopCheerSound(); // Stop the sound when window closes
-        // }
-        // });
-
-        // // Show the balloon frame for the celebration
-        // balloonFrame.setVisible(true);
-
-        // // Ask the user if they want to play again or quit
-        // int playAgainResponse = JOptionPane.showConfirmDialog(null,
-        // "The game has been reset. Do you want to play again?", "Play Again?",
-        // JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-        // if (playAgainResponse == JOptionPane.YES_OPTION) {
-        // // User chose to play again, reset the game again or start a new round
-        // game.resetGame(); // Reset the game state again
-        // System.out.println("Line 331: DEBUG: User chose to play again.");
-
-        // // This exits the current game window and goes back to gradechooser
-        // JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(mainPanel);
-        // if (currentFrame != null) {
-        // currentFrame.dispose();
-        // }
-
-        // // GradeChooserGUI mainWindow = new GradeChooserGUI();
-        // GradeChooserGUI.main(new String[0]);
-
-        // } else {
-        // // User chose not to play again, quit the application
-        // System.out.println("DEBUG: User chose to quit.");
-        // System.exit(0); // Quit the application
-        // }
-        // } else {
-        // if (attemptCount >= 3) {
-        // // They lost the game
-        // System.out.println("DEBUG: Line 352 was called"); // For debugging
-        // JOptionPane.showMessageDialog(null,
-        // "Sorry! Your guess was incorrect. The pattern was: " +
-        // game.getDealerPattern(),
-        // "Pattern Guess", JOptionPane.ERROR_MESSAGE);
-
-        // System.out.println("DEBUG: Line 357 was called"); // For debugging
-
-        // // This exits the current game window and goes back to gradechooser
-        // JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(mainPanel);
-        // if (currentFrame != null) {
-        // currentFrame.dispose();
-        // }
-        // System.out.println("DEBUG: Line 364 was called"); // For debugging
-        // // GradeChooserGUI mainWindow = new GradeChooserGUI();
-        // GradeChooserGUI.main(new String[0]);
-        // } else {
-        // if (attemptCount <= 3) {
-        // JOptionPane.showMessageDialog(null,
-        // "Sorry! Your guess was incorrect, please continue selecting cards\n",
-        // "Pattern Guess", JOptionPane.ERROR_MESSAGE);
-        // System.out.println("DEBUG: Line 372 was called"); // For debugging
-        // return;
-        // }
-        // }
-
-        // }
-        // });
-        // }
-
-        // // Check if the user has reached the maximum attempts
-        // if (attemptCount >= 3) {
-        // // Give user the option to guess the pattern
-        // showPatternSelectionOptions(guessedPattern -> {
-        // // Compare guessed pattern with the dealer's pattern
-        // if (guessedPattern.equals(game.getDealerPattern())) {
-        // JOptionPane.showMessageDialog(null, "Congratulations! You guessed the pattern
-        // correctly!",
-        // "Pattern Guess", JOptionPane.INFORMATION_MESSAGE);
-
-        // // Play cheer sound
-        // // new SoundPlayer().playCheerSound();
-        // // TODO: Show balloonFrame instead of repeating this code, how to?
-        // JFrame balloonFrame = new JFrame("Celebration!");
-        // balloonFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        // balloonFrame.setSize(500, 500);
-
-        // // Create the BalloonPanel and set its background to black
-        // BalloonPanel balloonPanel = new BalloonPanel();
-        // balloonPanel.setBackground(Color.BLACK); // Set the background of the panel
-        // to black
-        // balloonPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5)); //
-        // Neon green border
-
-        // balloonFrame.add(balloonPanel);
-        // // TODO: Play sound instead of repeating this code, how to?
-        // // Play cheer sound with looping
-        // SoundPlayer soundPlayer = new SoundPlayer();
-        // soundPlayer.playCheerSound(); // Start playing and looping the sound
-
-        // // Add a listener to stop the sound when the window is closed
-        // balloonFrame.addWindowListener(new java.awt.event.WindowAdapter() {
-
-        // @Override
-        // public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-        // soundPlayer.stopCheerSound(); // Stop the sound when window closes
-        // }
-        // });
-
-        // // Show the balloon frame for the celebration
-        // balloonFrame.setVisible(true);
-        // // TODO: This is repeated code, how can i call from gradechoosebase?
-        // // Ask the user if they want to play again or quit
-        // int playAgainResponse = JOptionPane.showConfirmDialog(null,
-        // "The game has been reset. Do you want to play again?", "Play Again?",
-        // JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-        // if (playAgainResponse == JOptionPane.YES_OPTION) {
-        // // User chose to play again, reset the game again or start a new round
-        // game.resetGame(); // Reset the game state again
-        // System.out.println("DEBUG: User chose to play again.");
-        // } else {
-        // // User chose not to play again, quit the application
-        // System.out.println("DEBUG: User chose to quit.");
-        // System.exit(0); // Quit the application
-        // }
-
-        // } else {
-        // JOptionPane.showMessageDialog(null,
-        // "Sorry! Your guess was incorrect. The pattern was: " +
-        // game.getDealerPattern(),
-        // "Pattern Guess", JOptionPane.INFORMATION_MESSAGE);
-        // System.out.println("DEBUG: Line 441 was called"); // For debugging
-
-        // // TODO: Some reason, it continues popping up with the showoptionsdialog box
-        // and
-        // // it will not close.
-
-        // // GradeChooserGUI mainWindow = new GradeChooserGUI();
-        // GradeChooserGUI.main(new String[0]);
-        // }
-
-        // // Reset for the next round if the guess was correct or incorrect
-        // attemptCount = 0; // Reset attempts for the next round
-        // updateOutputArea(); // Clear output area
-        // });
-        // }
-
-        // // // Reset selections if the guess was incorrect
-        // resetSelections(); // Reset all selections
-        // } else {
-        // // User chose "No", allow them to continue selecting/changing cards
-        // System.out.println("Line 461 User wants to change their selection.");
-        // resetSelections(); // Reset all selections
-        // }
-        // // }
     }
 
     // Method to show pattern selection options upon wanting to guess
-    // TODO: Can i put this in ArtDealerGameBase? Call it from there?
-
     public void showPatternSelectionOptions(java.util.function.Consumer<String> callback) {
         // Step 1: Create a new JFrame (the window)
         JFrame frame = new JFrame("Choose the Art Dealers pattern!"); // Create a new JFrame
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 300); // Set the size of the window
-        frame.setBackground(Color.black); // Set background color to black
-        frame.setForeground(Color.green); // Set text color to green
+
+        frame.getContentPane().setBackground(Color.BLACK); // Set background color to black
+        frame.getContentPane().setForeground(Color.GREEN); // Set text color to green
+        patternGuessComboBox.setBackground(Color.WHITE); // Set background color to black
+        patternGuessComboBox.setForeground(Color.GREEN); // Set text color to green
 
         // Step 2: Set a layout and add the JComboBox to the frame
         frame.setLayout(new java.awt.FlowLayout()); // Simple layout for the example
         frame.add(patternGuessComboBox); // Add the comboBox to the frame
 
         JButton submitButton = new JButton("Submit");
-        submitButton.setBackground(Color.BLACK); // Set background color to black
-        submitButton.setForeground(Color.GREEN); // Set text color to green
+        submitButton.setBackground(Color.green); // Set background color to black
+        submitButton.setForeground(Color.black); // Set text color to green
         submitButton.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
         submitButton.setFocusable(false); // Disable focus
-        submitButton.setBackground(Color.BLACK); // Set background color to black
-        submitButton.setForeground(Color.GREEN); // Set text color to green
 
         submitButton.addActionListener(e -> {
             String aguessedPattern = (String) patternGuessComboBox.getSelectedItem();
@@ -507,7 +299,41 @@ public class ArtDealerGameGui {
 
         frame.add(submitButton); // Add the submit button to the frame
 
+        // Center the frame on the screen
+        frame.setLocationRelativeTo(null);
+
         // Step 3: Make the frame visible
         frame.setVisible(true);
+    }
+
+    public void handlePatternGuess(String guessedPattern) {
+        if (guessedPattern.equals(game.getDealerPattern())) {
+            JOptionPane.showMessageDialog(null, "Congratulations! You guessed the pattern correctly!", "Pattern Guess",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            showBalloonFrame();
+            playCheerSound();
+            askPlayAgain(game);
+
+        } else {
+            if (game.getNumberOfGuessesRemaining() > 0) {
+                JOptionPane.showMessageDialog(null,
+                        "Sorry! Your guess was incorrect, please continue selecting cards\n", "Pattern Guess",
+                        JOptionPane.ERROR_MESSAGE);
+                game.clearSelectedCards();
+                return;
+            }
+
+            // User out of guesses, show they lost the game
+            JOptionPane.showMessageDialog(null,
+                    "Sorry! Your guess was incorrect. The pattern was: " + game.getDealerPattern(), "Pattern Guess",
+                    JOptionPane.INFORMATION_MESSAGE);
+            askPlayAgain(game);
+            // game.resetGame();
+        }
+    }
+
+    public void registerPatternSelectionCallback() {
+        showPatternSelectionOptions(this::handlePatternGuess);
     }
 }

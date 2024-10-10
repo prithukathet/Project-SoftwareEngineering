@@ -39,9 +39,10 @@ class BalloonPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(Color.RED);
+        g.setColor(Color.BLUE); // Set the color to blue
         for (Point p : balloonPositions) {
             g.fillOval(p.x, p.y, 30, 50); // Draw each balloon
         }
     }
+
 }

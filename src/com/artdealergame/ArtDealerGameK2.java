@@ -1,5 +1,7 @@
 package com.artdealergame;
 
+import java.util.ArrayList;
+
 import com.options.PatternBase;
 
 public class ArtDealerGameK2 extends ArtDealerGameBase {
@@ -12,48 +14,48 @@ public class ArtDealerGameK2 extends ArtDealerGameBase {
 
     // Method to check if a single card is being purchased by the dealer
     @Override
-    public boolean isDealerBuying(Card card) {
+    public ArrayList<Card> isDealerBuying(ArrayList<Card> cards) {
         switch (getDealerPattern()) {
         case "All Red":
-            return PatternBase.allRed(card);
+            return PatternBase.allRed(cards);
         case "All Black":
-            return PatternBase.allBlack(card);
+            return PatternBase.allBlack(cards);
         case "All Aces":
-            return PatternBase.allAces(card);
+            return PatternBase.allAces(cards);
         case "All Kings":
-            return PatternBase.allKings(card);
+            return PatternBase.allKings(cards);
         case "All Queens":
-            return PatternBase.allQueens(card);
+            return PatternBase.allQueens(cards);
         case "All Jacks":
-            return PatternBase.allJacks(card);
+            return PatternBase.allJacks(cards);
         case "All Tens":
-            return PatternBase.allTens(card);
+            return PatternBase.allTens(cards);
         case "All Nines":
-            return PatternBase.allNines(card);
+            return PatternBase.allNines(cards);
         case "All Eights":
-            return PatternBase.allEights(card);
+            return PatternBase.allEights(cards);
         case "All Sevens":
-            return PatternBase.allSevens(card);
+            return PatternBase.allSevens(cards);
         case "All Sixes":
-            return PatternBase.allSixes(card);
+            return PatternBase.allSixes(cards);
         case "All Fives":
-            return PatternBase.allFives(card);
+            return PatternBase.allFives(cards);
         case "All Fours":
-            return PatternBase.allFours(card);
+            return PatternBase.allFours(cards);
         case "All Threes":
-            return PatternBase.allThrees(card);
+            return PatternBase.allThrees(cards);
         case "All Twos":
-            return PatternBase.allTwos(card);
+            return PatternBase.allTwos(cards);
         case "All Hearts":
-            return PatternBase.allHearts(card);
+            return PatternBase.allHearts(cards);
         case "All Diamonds":
-            return PatternBase.allDiamonds(card);
+            return PatternBase.allDiamonds(cards);
         case "All Clubs":
-            return PatternBase.allClubs(card);
+            return PatternBase.allClubs(cards);
         case "All Spades":
-            return PatternBase.allSpades(card);
+            return PatternBase.allSpades(cards);
         default:
-            return false;
+            return new ArrayList<Card>();
         }
     }
 }

@@ -27,9 +27,15 @@ public abstract class ArtDealerGameBase {
     }
 
     public void resetGame() {
+        clearSelectedCards();
         Random random = new Random();
         dealerPattern = patterns[random.nextInt(patterns.length)];
         System.out.println("DEBUG: Dealer's pattern: " + dealerPattern);
+    }
+
+    // TEST ONLY function
+    public void overridePattern(String pattern) {
+        this.dealerPattern = pattern;
     }
 
     public void addObserver(GameObserver observer) {
@@ -52,6 +58,10 @@ public abstract class ArtDealerGameBase {
         }
     }
 
+    public int getNumberOfGuessesRemaining() {
+        return Constants.MAX_GUESSES - numberOfGuesses;
+    }
+
     public boolean cardSelected(Card card) {
         if (card.isSelected()) {
             // If the card is selected, deselect itand remove it from the selected cards
@@ -72,7 +82,7 @@ public abstract class ArtDealerGameBase {
         return true;
     }
 
-    public abstract boolean isDealerBuying(Card card);
+    public abstract ArrayList<Card> isDealerBuying(ArrayList<Card> card);
 
     // Method to check if the user's guess matches the dealer's pattern
     public boolean checkPatternGuess(String pattern) {
@@ -92,6 +102,15 @@ public abstract class ArtDealerGameBase {
         return cards;
     }
 
+    public void clearSelectedCards() {
+        for (Card card : selectedCards) {
+            card.deselect();
+        }
+
+        selectedCards.clear();
+        notifySelectedCardsObservers();
+    }
+
     public ArrayList<Card> getSelectedCards() {
         return selectedCards;
     }
@@ -102,12 +121,7 @@ public abstract class ArtDealerGameBase {
             numberOfGuesses++;
             notifyAttemptObservers();
 
-            for (Card card : selectedCards) {
-                if (isDealerBuying(card)) {
-                    matchedCards.add(card);
-                }
-            }
-
+            matchedCards = isDealerBuying(selectedCards);
         }
 
         return matchedCards;

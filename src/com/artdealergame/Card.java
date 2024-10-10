@@ -10,6 +10,7 @@ public class Card {
     private CardValue value;
     private CardColor color;
     private boolean selected = false;
+    private String fullCardName;
 
     private List<CardObserver> observers = new ArrayList<>();
 
@@ -33,6 +34,67 @@ public class Card {
         // Resize the image
         image = new ImageIcon(
                 image.getImage().getScaledInstance(Constants.CARD_WIDTH, Constants.CARD_HEIGHT, Image.SCALE_SMOOTH));
+
+        setFullCardName();
+    }
+
+    public String getFullCardName() {
+        return fullCardName;
+    }
+
+    // If you also want the full card name (e.g., 'jack of clubs'), add this:
+    private void setFullCardName() {
+        String valueName;
+
+        // Check if the card is a number card 2-10 or a face card
+        switch (value) {
+        case TWO:
+            valueName = "2";
+            break;
+        case THREE:
+            valueName = "3";
+            break;
+        case FOUR:
+            valueName = "4";
+            break;
+        case FIVE:
+            valueName = "5";
+            break;
+        case SIX:
+            valueName = "6";
+            break;
+        case SEVEN:
+            valueName = "7";
+            break;
+        case EIGHT:
+            valueName = "8";
+            break;
+        case NINE:
+            valueName = "9";
+            break;
+        case TEN:
+            valueName = "10";
+            break;
+        case JACK:
+            valueName = "Jack";
+            break;
+        case QUEEN:
+            valueName = "Queen";
+            break;
+        case KING:
+            valueName = "King";
+            break;
+        case ACE:
+            valueName = "Ace";
+            break;
+        default:
+            valueName = value.name().charAt(0) + value.name().substring(1).toLowerCase();
+            break;
+        }
+
+        // Format the full card name as "<value> of <suit>"
+        String suitName = suit.name().charAt(0) + suit.name().substring(1).toLowerCase();
+        fullCardName = valueName + " of " + suitName;
     }
 
     public void addObserver(CardObserver observer) {

@@ -23,8 +23,7 @@ public class SelectedCardsObserver implements GameObserver {
     private void updateOutputArea(ArrayList<Card> selectedCards) {
         StringBuilder output = new StringBuilder("Selected Cards:\n");
         for (Card card : selectedCards) {
-            output.append(card.getValue().name().toLowerCase()).append(" of ")
-                    .append(card.getSuit().name().toLowerCase()).append(", ");
+            output.append(card.getFullCardName()).append(", ");
         }
 
         // Remove the last comma and space if there are any selected cards
