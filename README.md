@@ -63,5 +63,28 @@ The Art Dealer Game is a simulation designed to teach K-8 students computational
     <li>After either winning or 3 failed attempts, it will ask you to start a new game or quit.</li>
 </ul>
 
+<h2>How to Use Jar File</h2>
+<ul>
+    <li>Utilize BASH:</li>
+    <pre>java -jar .\softwareengineeringassignment.jar</pre>
+    <li>Ensure Java is installed and added to your system's path.</li>
+</ul>
+
+<h3>Jar File</h3>
+<p>A JAR file is a package file format used to distribute Java applications or libraries. It combines multiple .class files, resources, and metadata into a single, compressed file. JAR files make it easy to share or execute Java programs across different environments.</p>
+
+<h3>Requirements</h3>
+<ul>
+    <li>Java 8 or higher.</li>
+    <li>No external libraries are needed.</li>
+    <li>Java Runtime Environment or Java Development Kit (JDK).</li>
+</ul>
+
+<h2>Authors</h2>
+<ul>
+    <li>Prithu Kathet</li>
+    <li>Travis Lester</li>
+</ul>
+
 </body>
 </html>
