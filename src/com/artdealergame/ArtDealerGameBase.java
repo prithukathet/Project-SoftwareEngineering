@@ -7,7 +7,7 @@ import java.util.Random;
 public abstract class ArtDealerGameBase {
     protected String dealerPattern;
     protected String[] patterns;
-    protected javax.swing.JLabel guessStatusLabel; // Add this line
+    protected javax.swing.JLabel guessStatusLabel;
     Card[] cards = new Card[52];
     ArrayList<Card> selectedCards = new ArrayList<Card>();
     private int numberOfGuesses = 0;

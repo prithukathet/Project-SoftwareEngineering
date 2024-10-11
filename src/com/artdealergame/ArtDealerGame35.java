@@ -10,12 +10,11 @@ public class ArtDealerGame35 extends ArtDealerGameBase {
 
     public ArtDealerGame35() {
         super(new String[] { "Sum to 9", "Ace and Black Jack", "Single Digit Primes", "All Red", "All Black", "All Hearts", "All Diamonds", "All Clubs", "All Spades",
-                "All Aces", "All Kings", "All Queens", "All Jacks", "All Tens", "All Nines", "All Eights", "All Sevens",
-                "All Sixes", "All Fives", "All Fours", "All Threes", "All Twos" });
+        "All Aces", "All Kings", "All Queens", "All Jacks", "All Tens", "All Nines", "All Eights", "All Sevens",
+        "All Sixes", "All Fives", "All Fours", "All Threes", "All Twos" }); // feel free to change this to one to test each case
     }
 
     // Method to check if a single card is being purchased by the dealer
-    // add all patterns from K-2 and 3-5
     @Override
     public ArrayList<Card> isDealerBuying(ArrayList<Card> cards) {
         switch (getDealerPattern()) {
@@ -57,16 +56,12 @@ public class ArtDealerGame35 extends ArtDealerGameBase {
             return PatternBase.allClubs(cards);
         case "All Spades":
             return PatternBase.allSpades(cards);
-        case "All Single-Digit Primes":
-            return Pattern35.allSingleDigitPrimes(cards);
+        case "Single Digit Primes":
+            return Pattern35.singleDigitPrimes(cards);
         case "Sum to 9":
-            // TODO: How to handle this case?
-            return new ArrayList<Card>();
-        // return !Pattern35.findCombinationsToNine(new String[] { card }).isEmpty();
+            return Pattern35.findCombinationsToNine(cards);
         case "Ace and Black Jack":
-            // TODO: How to handle this case?
-            return new ArrayList<Card>();
-        // return Pattern35.checkAceAndBlackjack(new String[] { card });
+            return Pattern35.checkAceAndBlackjack(cards);
         default:
             System.out.println("Game35 Window : Unknown dealer pattern: " + dealerPattern);
             return new ArrayList<Card>();

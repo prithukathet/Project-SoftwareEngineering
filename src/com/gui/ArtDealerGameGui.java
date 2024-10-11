@@ -3,6 +3,7 @@ package com.gui;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import com.artdealergame.ArtDealerGameBase;
 import com.artdealergame.ArtDealerGameFactory;
@@ -10,12 +11,13 @@ import com.artdealergame.AttemptObserver;
 import com.artdealergame.GameType;
 import com.artdealergame.Card;
 import com.artdealergame.SelectedCardsObserver;
+
+import java.awt.event.ActionEvent;
+
 import com.artdealergame.Constants;
 
 public class ArtDealerGameGui {
-    // protected static final String True = null;
     private JTextArea outputArea; // Declare outputArea as a class member
-    // private JFrame balloonFrame; // Declare balloonFrame as a class member
     private JComboBox<String> patternGuessComboBox; // Add this declaration
     private JPanel mainPanel; // Declare mainPanel as a class member
     private ImageIcon checkMarkIcon; // Declare checkMarkIcon as a class member
@@ -134,7 +136,7 @@ public class ArtDealerGameGui {
 
         // --------------------Bottom Left Panel------------------//
         JPanel bottomLeftPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        guessStatusLabel = new JLabel("<html><b>Attempts:</b> 0<br>Remaining: 3</html>"); // Initial message
+        guessStatusLabel = new JLabel("<html><b>Attempts:</b> 0<br>Remaining: 5</html>"); // Initial message
         guessStatusLabel.setForeground(Color.GREEN); // Set text color to green
         guessStatusLabel.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
         bottomLeftPanel.setPreferredSize(new Dimension(160, 120)); // Set height of the bottom panel to 100 pixels
@@ -178,7 +180,7 @@ public class ArtDealerGameGui {
         patternGuessComboBox.setForeground(Color.GREEN); // Set text color to white
         patternGuessComboBox.setBorder(new LineBorder(Color.GREEN, 2)); // Set neon green border
         patternGuessComboBox.setFocusable(false);
-        
+
         K2Frame.add(bottomPanel, BorderLayout.SOUTH); // Add bottom panel at the bottom
         bottomPanel.add(bottomLeftPanel, BorderLayout.WEST); // Add bottomLeftPanel to the left (WEST)
         bottomPanel.add(bottomCenterPanel, BorderLayout.CENTER); // Add bottom panel at the bottom
@@ -236,17 +238,27 @@ public class ArtDealerGameGui {
     }
 
     public void showBalloonFrame() {
-        JFrame balloonFrame = new JFrame("Celebration!");
+        balloonFrame = new JFrame("Congratulations!");
         balloonFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         balloonFrame.setSize(500, 500);
-
         BalloonPanel balloonPanel = new BalloonPanel();
         balloonPanel.setBackground(Color.BLACK);
         balloonPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5));
-
         balloonFrame.add(balloonPanel);
-        balloonFrame.setLocationRelativeTo(null);
         balloonFrame.setVisible(true);
+        balloonFrame.setLocationRelativeTo(null);
+   
+        // Schedule the window to close after 5 seconds
+        Timer timer = new Timer(5000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (balloonFrame != null) {
+                    balloonFrame.dispose(); // Close the window
+                }
+            }
+        });
+        timer.setRepeats(false); // Ensure the timer only runs once
+        timer.start();
     }
 
     public void askPlayAgain(ArtDealerGameBase game) {
@@ -255,15 +267,20 @@ public class ArtDealerGameGui {
                 JOptionPane.QUESTION_MESSAGE);
 
         if (playAgainResponse == JOptionPane.YES_OPTION) {
-            // TODO: Get this Yes option to close the balloon and reset selection
-            stopCheerSound();
+            // Ensure balloonFrame is not null before disposing it
             if (balloonFrame != null) {
-                balloonFrame.dispose(); // Close the balloonFrame
+                balloonFrame.dispose();
             }
-            System.out.println("DEBUG: User chose to play again.");
+
+            // Stop the cheer sound if it's playing
+            stopCheerSound();
+
+            // Reset the game state for another round
             game.resetGame();
+            System.out.println("Game has been reset. Ready to play again.");
 
         } else {
+            // If user chooses 'No', exit the game
             System.out.println("DEBUG: User chose to quit.");
             System.exit(0);
         }
@@ -278,8 +295,9 @@ public class ArtDealerGameGui {
 
         frame.getContentPane().setBackground(Color.BLACK); // Set background color to black
         frame.getContentPane().setForeground(Color.GREEN); // Set text color to green
-        patternGuessComboBox.setBackground(Color.WHITE); // Set background color to black
+        patternGuessComboBox.setBackground(Color.BLACK); // Set background color to black
         patternGuessComboBox.setForeground(Color.GREEN); // Set text color to green
+        patternGuessComboBox.setFocusable(false); // Disable focus
 
         // Step 2: Set a layout and add the JComboBox to the frame
         frame.setLayout(new java.awt.FlowLayout()); // Simple layout for the example
@@ -318,18 +336,19 @@ public class ArtDealerGameGui {
         } else {
             if (game.getNumberOfGuessesRemaining() > 0) {
                 JOptionPane.showMessageDialog(null,
-                        "Sorry! Your guess was incorrect, please continue selecting cards\n", "Pattern Guess",
-                        JOptionPane.ERROR_MESSAGE);
+                        "Sorry! Your guess was incorrect, please continue selecting cards.\nYou have "
+                                + game.getNumberOfGuessesRemaining() + " guesses remaining.",
+                        "Pattern Guess", JOptionPane.ERROR_MESSAGE);
                 game.clearSelectedCards();
                 return;
             }
 
             // User out of guesses, show they lost the game
             JOptionPane.showMessageDialog(null,
-                    "Sorry! Your guess was incorrect. The pattern was: " + game.getDealerPattern(), "Pattern Guess",
-                    JOptionPane.INFORMATION_MESSAGE);
+                    "Sorry! Your guess was incorrect and you have no more guesses. \nThe pattern was: "
+                            + game.getDealerPattern(),
+                    "Pattern Guess", JOptionPane.INFORMATION_MESSAGE);
             askPlayAgain(game);
-            // game.resetGame();
         }
     }
 

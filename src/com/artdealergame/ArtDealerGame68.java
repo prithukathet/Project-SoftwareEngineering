@@ -5,14 +5,14 @@ import com.options.PatternBase;
 import java.util.ArrayList;
 
 import com.options.Pattern35;
-// import com.options.Pattern68;
+import com.options.Pattern68;
 
 public class ArtDealerGame68 extends ArtDealerGameBase {
 
     public ArtDealerGame68() {
-        super(new String[] { "Three of a Kind", "Two Pair", "One Pair", "Sum to 9", "Ace and Black Jack", "Single Digit Primes", "All Red", "All Black", "All Hearts", "All Diamonds", "All Clubs", "All Spades",
-                "All Aces", "All Kings", "All Queens", "All Jacks", "All Tens", "All Nines", "All Eights", "All Sevens",
-                "All Sixes", "All Fives", "All Fours", "All Threes", "All Twos" });
+        super(new String[] { "Straight Flush", "Straight", "Three of a Kind", "A Pair", "Sum to 9", "Ace and Black Jack", "Single Digit Primes", "All Red", "All Black", "All Hearts", "All Diamonds", "All Clubs", "All Spades",
+        "All Aces", "All Kings", "All Queens", "All Jacks", "All Tens", "All Nines", "All Eights", "All Sevens",
+        "All Sixes", "All Fives", "All Fours", "All Threes", "All Twos" });
     }
 
     // Method to check if a single card is being purchased by the dealer
@@ -58,32 +58,20 @@ public class ArtDealerGame68 extends ArtDealerGameBase {
             return PatternBase.allClubs(cards);
         case "All Spades":
             return PatternBase.allSpades(cards);
-        case "All Single-Digit Primes":
-            return Pattern35.allSingleDigitPrimes(cards);
+        case "Single Digit Primes":
+            return Pattern35.singleDigitPrimes(cards);
         case "Sum to 9":
-            // TODO: How to handle this case?
-            return new ArrayList<Card>();
-        // return !Pattern35.findCombinationsToNine(new String[] { card }).isEmpty();
+            return Pattern35.findCombinationsToNine(cards);
         case "Ace and Black Jack":
-            // TODO: How to handle this case?
-            return new ArrayList<Card>();
-        // return Pattern35.checkAceAndBlackjack(new String[] { card });
-        case "One Pair":
-            // TODO: How to handle this case?
-            return new ArrayList<Card>();
-        // return Pattern68.onePair(new String[] { card });
-        case "Two Pairs":
-            // TODO: How to handle this case?
-            return new ArrayList<Card>();
-        // return Pattern68.twoPair(new String[] { card });
+            return Pattern35.checkAceAndBlackjack(cards);
+        case "A Pair":
+            return Pattern68.onePair(cards);
         case "Three of a Kind":
-            // TODO: How to handle this case?
-            return new ArrayList<Card>();
-        // return Pattern68.threePair(new String[] { card });
-        case "Four of a Kind":
-            // TODO: How to handle this case?
-            return new ArrayList<Card>();
-        // return Pattern68.fourPair(new String[] { card });
+            return Pattern68.threeOfAKind(cards);
+        case "Straight":
+            return Pattern68.straight(cards);
+        case "Straight Flush":
+            return Pattern68.straightFlush(cards);
         default:
             System.out.println("Game35 Window : Unknown dealer pattern: " + dealerPattern);
             return new ArrayList<Card>();

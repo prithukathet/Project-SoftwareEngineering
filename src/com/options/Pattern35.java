@@ -12,10 +12,10 @@ import com.artdealergame.CardValue;
 
 public interface Pattern35 extends PatternBase {
 
-    public static ArrayList<Card> allSingleDigitPrimes(ArrayList<Card> cards) {
+    public static ArrayList<Card> singleDigitPrimes(ArrayList<Card> cards) {
         // Define the set of single-digit prime numbers
         ArrayList<Card> matchingCards = new ArrayList<Card>();
-        Set<CardValue> singleDigitPrimes = EnumSet.of(CardValue.TWO, CardValue.THREE, CardValue.FIVE, CardValue.SEVEN);
+        Set<CardValue> singleDigitPrimes = EnumSet.of(CardValue.TWO, CardValue.THREE, CardValue.FIVE, CardValue.SEVEN, CardValue.JACK, CardValue.KING);
         for (Card card : cards) {
             if (singleDigitPrimes.contains(card.getValue())) {
                 matchingCards.add(card);
