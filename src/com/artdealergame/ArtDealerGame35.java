@@ -1,10 +1,8 @@
 package com.artdealergame;
 
 import com.options.PatternBase;
-
-import java.util.ArrayList;
-
 import com.options.Pattern35;
+import java.util.ArrayList;
 
 public class ArtDealerGame35 extends ArtDealerGameBase {
 

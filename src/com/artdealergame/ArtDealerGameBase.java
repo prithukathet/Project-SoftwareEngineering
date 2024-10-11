@@ -33,7 +33,6 @@ public abstract class ArtDealerGameBase {
         System.out.println("DEBUG: Dealer's pattern: " + dealerPattern);
     }
 
-    // TEST ONLY function
     public void overridePattern(String pattern) {
         this.dealerPattern = pattern;
     }

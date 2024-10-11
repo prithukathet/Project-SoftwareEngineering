@@ -1,9 +1,8 @@
 package com.artdealergame;
 
-import com.options.PatternBase;
-
 import java.util.ArrayList;
 
+import com.options.PatternBase;
 import com.options.Pattern35;
 import com.options.Pattern68;
 
@@ -73,7 +72,6 @@ public class ArtDealerGame68 extends ArtDealerGameBase {
         case "Straight Flush":
             return Pattern68.straightFlush(cards);
         default:
-            System.out.println("Game35 Window : Unknown dealer pattern: " + dealerPattern);
             return new ArrayList<Card>();
         }
     }
