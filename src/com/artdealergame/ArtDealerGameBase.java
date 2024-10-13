@@ -30,11 +30,9 @@ public abstract class ArtDealerGameBase {
         clearSelectedCards();
         Random random = new Random();
         dealerPattern = patterns[random.nextInt(patterns.length)];
+        numberOfGuesses = 0;
+        notifyAttemptObservers();
         System.out.println("DEBUG: Dealer's pattern: " + dealerPattern);
-    }
-
-    public void overridePattern(String pattern) {
-        this.dealerPattern = pattern;
     }
 
     public void addObserver(GameObserver observer) {

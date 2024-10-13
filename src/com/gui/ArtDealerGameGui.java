@@ -32,7 +32,7 @@ public class ArtDealerGameGui {
 
         // Initialize the game instance
         game = ArtDealerGameFactory.createGame(gameType);
-        // Create the K-2 Main window frame
+        // Create the Main window frame
         String windowName = "";
         switch (gameType) {
         case GAMEK2:
@@ -45,13 +45,13 @@ public class ArtDealerGameGui {
             windowName = "Grade 6-8 - Card Values";
             break;
         }
-        JFrame K2Frame = new JFrame(windowName);
-        K2Frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        K2Frame.setSize(1600, 700); // Increased height to accommodate output area
-        K2Frame.setLocationRelativeTo(null); // Center the window
-        K2Frame.setResizable(false); // Do not allow resizing
+        JFrame mainFrame = new JFrame(windowName);
+        mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        mainFrame.setSize(1600, 700); // Increased height to accommodate output area
+        mainFrame.setLocationRelativeTo(null); // Center the window
+        mainFrame.setResizable(false); // Do not allow resizing
         ImageIcon image = new ImageIcon(getClass().getResource("/resources/artdealer.jpg"));
-        K2Frame.setIconImage(image.getImage());
+        mainFrame.setIconImage(image.getImage());
 
         patternGuessComboBox = new JComboBox<>(game.getPatterns()); // Example initialization
 
@@ -74,11 +74,11 @@ public class ArtDealerGameGui {
         // Add the button to the instruction panel (far right) with event listener
         northGamePanel.add(northChooseButton, BorderLayout.EAST);
         northChooseButton.addActionListener(e -> {
-            K2Frame.dispose(); // Close this window
+            mainFrame.dispose(); // Close this window
             GradeChooserGUI.main(new String[0]); // Re-open the GradeChooserGUI
         });
 
-        K2Frame.add(northGamePanel, BorderLayout.NORTH); // Add instruction panel at the top
+        mainFrame.add(northGamePanel, BorderLayout.NORTH); // Add instruction panel at the top
 
         // -----------------------Main Panel---------------------//
         mainPanel = new JPanel(new GridLayout(4, 13, 10, 10)); // 4 rows, 13 columns
@@ -126,7 +126,7 @@ public class ArtDealerGameGui {
             mainPanel.add(layeredPane); // Add layered pane to the grid
         }
 
-        K2Frame.add(mainPanel, BorderLayout.CENTER); // Add main panel in the center
+        mainFrame.add(mainPanel, BorderLayout.CENTER); // Add main panel in the center
 
         // ------------------Bottom Panel--------------------//
         JPanel bottomPanel = new JPanel(new BorderLayout()); // Create a new panel for the bottom
@@ -136,7 +136,7 @@ public class ArtDealerGameGui {
 
         // --------------------Bottom Left Panel------------------//
         JPanel bottomLeftPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        guessStatusLabel = new JLabel("<html><b>Attempts:</b> 0<br>Remaining: 5</html>"); // Initial message
+        guessStatusLabel = new JLabel("<html><b>Attempts:</b> 0<br>Remaining: 3</html>"); // Initial message
         guessStatusLabel.setForeground(Color.GREEN); // Set text color to green
         guessStatusLabel.setFont(new Font("Comic Sans", Font.BOLD, 16)); // Set font preference
         bottomLeftPanel.setPreferredSize(new Dimension(160, 120)); // Set height of the bottom panel to 100 pixels
@@ -181,13 +181,13 @@ public class ArtDealerGameGui {
         patternGuessComboBox.setBorder(new LineBorder(Color.GREEN, 2)); // Set neon green border
         patternGuessComboBox.setFocusable(false);
 
-        K2Frame.add(bottomPanel, BorderLayout.SOUTH); // Add bottom panel at the bottom
+        mainFrame.add(bottomPanel, BorderLayout.SOUTH); // Add bottom panel at the bottom
         bottomPanel.add(bottomLeftPanel, BorderLayout.WEST); // Add bottomLeftPanel to the left (WEST)
         bottomPanel.add(bottomCenterPanel, BorderLayout.CENTER); // Add bottom panel at the bottom
         bottomPanel.add(bottomRightPanel, BorderLayout.EAST); // Add bottom panel at the bottom
 
         // Makes the frame visible
-        K2Frame.setVisible(true); // Make the K-2 window visible
+        mainFrame.setVisible(true); // Make the K-2 window visible
     }
 
     public void stopCheerSound() {
@@ -247,7 +247,7 @@ public class ArtDealerGameGui {
         balloonFrame.add(balloonPanel);
         balloonFrame.setVisible(true);
         balloonFrame.setLocationRelativeTo(null);
-   
+
         // Schedule the window to close after 5 seconds
         Timer timer = new Timer(5000, new ActionListener() {
             @Override
@@ -261,6 +261,8 @@ public class ArtDealerGameGui {
         timer.start();
     }
 
+    private JFrame mainFrame; // Add this field to hold the reference to mainFrame
+
     public void askPlayAgain(ArtDealerGameBase game) {
         int playAgainResponse = JOptionPane.showConfirmDialog(null,
                 "The game has been reset. Do you want to play again?", "Play Again?", JOptionPane.YES_NO_OPTION,
@@ -272,17 +274,36 @@ public class ArtDealerGameGui {
                 balloonFrame.dispose();
             }
 
+            if (mainFrame != null) {
+                mainFrame.dispose();
+            }
+
             // Stop the cheer sound if it's playing
             stopCheerSound();
-
             // Reset the game state for another round
             game.resetGame();
             System.out.println("Game has been reset. Ready to play again.");
 
         } else {
             // If user chooses 'No', exit the game
-            System.out.println("DEBUG: User chose to quit.");
-            System.exit(0);
+           
+            stopCheerSound();
+
+            // Ensure balloonFrame is not null before disposing it
+            if (balloonFrame != null) {
+                balloonFrame.dispose();
+            }
+
+            // Dispose of all open frames
+            for (Frame frame : Frame.getFrames()) {
+                frame.dispose();
+            }
+
+            // Stop the cheer sound if it's playing
+
+            // Reset the game state for another round
+            System.out.println("DEBUG: User chose not to play again.");
+            GradeChooserGUI.main(new String[0]); // Re-open the GradeChooserGUI
         }
     }
 
