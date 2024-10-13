@@ -299,8 +299,6 @@ public class ArtDealerGameGui {
                 frame.dispose();
             }
 
-            // Stop the cheer sound if it's playing
-
             // Reset the game state for another round
             System.out.println("DEBUG: User chose not to play again.");
             GradeChooserGUI.main(new String[0]); // Re-open the GradeChooserGUI
