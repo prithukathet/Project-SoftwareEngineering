@@ -13,8 +13,7 @@ class BalloonPanel extends JPanel {
     public BalloonPanel() {
         // Add starting positions for balloons
         for (int i = 0; i < 10; i++) {
-            balloonPositions.add(new Point((int) (Math.random() * 400), 400 + i * 40)); // Random horizontal
-                                                                                        // positions
+            balloonPositions.add(new Point((int) (Math.random() * 400), 400 + i * 40)); // Random horizontal positions
         }
 
         // Create timer to move balloons upwards
@@ -39,10 +38,14 @@ class BalloonPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(Color.BLUE); // Set the color to blue
-        for (Point p : balloonPositions) {
+        for (int i = 0; i < balloonPositions.size(); i++) {
+            Point p = balloonPositions.get(i);
+            if (i % 2 == 0) {
+                g.setColor(Color.BLUE); // Set the color to blue for even index
+            } else {
+                g.setColor(Color.GREEN); // Set the color to green for odd index
+            }
             g.fillOval(p.x, p.y, 30, 50); // Draw each balloon
         }
     }
-
 }
