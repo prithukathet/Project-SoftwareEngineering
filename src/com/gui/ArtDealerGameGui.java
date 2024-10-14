@@ -222,9 +222,15 @@ public class ArtDealerGameGui {
 
                 StringBuilder purchasedString = new StringBuilder();
                 purchasedString.append("Cards Purchased by the Dealer:\n");
-                for (Card purchased : purchasedCards) {
-                    purchasedString.append(purchased.getFullCardName()).append("\n");
+                
+                if (purchasedCards.isEmpty()) {
+                    purchasedString.append("None\n");
+                } else {
+                    for (Card purchased : purchasedCards) {
+                            purchasedString.append(purchased.getFullCardName()).append("\n");
                 }
+            }
+                
 
                 // Show the cards the art dealer has purchased
                 JOptionPane.showMessageDialog(null, purchasedString, "Matching Cards Result",
