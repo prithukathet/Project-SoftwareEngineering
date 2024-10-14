@@ -9,7 +9,7 @@ public class ArtDealerGame35 extends ArtDealerGameBase {
     public ArtDealerGame35() {
         super(new String[] { "Sum to 9", "Ace and Black Jack", "Single Digit Primes", "All Red", "All Black", "All Hearts", "All Diamonds", "All Clubs", "All Spades",
         "All Aces", "All Kings", "All Queens", "All Jacks", "All Tens", "All Nines", "All Eights", "All Sevens",
-        "All Sixes", "All Fives", "All Fours", "All Threes", "All Twos" }); // feel free to change this to one to test each case
+        "All Sixes", "All Fives", "All Fours", "All Threes", "All Twos"}); // feel free to change this to one to test each case
     }
 
     // Method to check if a single card is being purchased by the dealer
