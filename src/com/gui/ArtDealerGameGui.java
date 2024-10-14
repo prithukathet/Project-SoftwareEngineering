@@ -47,7 +47,7 @@ public class ArtDealerGameGui {
         }
         JFrame mainFrame = new JFrame(windowName);
         mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        mainFrame.setSize(1600, 700); // Increased height to accommodate output area
+        mainFrame.setSize(1200, 650); // Increased height to accommodate output area
         mainFrame.setLocationRelativeTo(null); // Center the window
         mainFrame.setResizable(false); // Do not allow resizing
         ImageIcon image = new ImageIcon(getClass().getResource("/resources/artdealer.jpg"));
