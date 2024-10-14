@@ -9,12 +9,10 @@ import com.options.Pattern68;
 public class ArtDealerGame68 extends ArtDealerGameBase {
 
     public ArtDealerGame68() {
-        super(new String[] { "Three of a Kind" });
+        super(new String[] { "Straight Flush", "Straight", "Three of a Kind", "A Pair", "Sum to 9", "Ace and Black Jack", "Single Digit Primes", "All Red", "All Black", "All Hearts", "All Diamonds", "All Clubs", "All Spades",
+        "All Aces", "All Kings", "All Queens", "All Jacks", "All Tens", "All Nines", "All Eights", "All Sevens",
+        "All Sixes", "All Fives", "All Fours", "All Threes", "All Twos" });
     }
-
-    // "Straight Flush", "Straight", "Three of a Kind", "A Pair", "Sum to 9", "Ace and Black Jack", "Single Digit Primes", "All Red", "All Black", "All Hearts", "All Diamonds", "All Clubs", "All Spades",
-    //     "All Aces", "All Kings", "All Queens", "All Jacks", "All Tens", "All Nines", "All Eights", "All Sevens",
-    //     "All Sixes", "All Fives", "All Fours", "All Threes", "All Twos"
 
     // Method to check if a single card is being purchased by the dealer
     // add all patterns from K-2 and 3-5
